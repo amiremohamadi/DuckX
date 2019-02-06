@@ -59,7 +59,8 @@ private:
 public:
     Document();
     Document(const char *);
-    void file(char *);
+    void file(const char *);
+    void open();
 
     Paragraph &paragraphs();
 };
