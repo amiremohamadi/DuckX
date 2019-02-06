@@ -5,6 +5,7 @@
 
 int main() {
     Document doc("my_test.docx");
+    doc.open();
     
 
     for (auto p = doc.paragraphs(); p.hasNext() ; p.next()) {

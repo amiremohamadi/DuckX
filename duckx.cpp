@@ -43,23 +43,21 @@ Document::Document() {
 
 Document::Document(const char *directory) {
     this->directory = directory;
+}
 
+void Document::file(const char *directory) {
+    this->directory = directory;
+}
+
+void Document::open() {
     Handle handle(this->directory);
+
     document.load_string(
         handle.getContent()
     );
 
     this->paragraph.setParent(
         document.child("w:document").child("w:body")
-    );
-}
-
-void Document::file(char *directory) {
-    this->directory = directory;
-    
-    Handle handle(directory);
-    document.load_string(
-        handle.getContent()
     );
 }
 
