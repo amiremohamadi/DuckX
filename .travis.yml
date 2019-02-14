@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 sudo: required
 
 language: cpp
@@ -13,7 +13,7 @@ addons:
       - g++-6
       
 install:
-  - sudo apt-get install zlib1g-dev
+  - sudo apt-get install zlib-dev
 
 script:
   - mkdir build
