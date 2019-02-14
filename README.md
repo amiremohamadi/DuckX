@@ -27,8 +27,40 @@ int main() {
     }
 }
 ```
-* [Examples](https://github.com/amiremohamadi/DuckX/tree/master/samples)
 
+**Note** that you must use -lduckx flag to compile your cpp file
+<br/>
+For example:
+```bash
+g++ sample1.cpp -lduckx
+```
+
+* See other [Examples](https://github.com/amiremohamadi/DuckX/tree/master/samples)
+
+
+## Install ##
+
+In order to use and compile duckx you need to have zlib.
+
+#### Download dependencies
+
+```bash
+sudo dnf install g++  # for ubuntu
+sudo apt-get install zlib-dev  # for ubuntu
+
+sudo dnf install gcc-c++  # for fedora
+sudo dnf install zlib-devel  # for fedora
+```
+
+#### Compiling
+
+The preferred way is to create a build folder
+```bash
+git clone https://github.com/amiremohamadi/DuckX.git
+cd DuckX
+mkdir build
+sudo make
+```
 
 ## Requirements ##
 
