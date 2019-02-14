@@ -1,5 +1,7 @@
 <p align="center"><img src="https://github.com/amiremohamadi/DuckX/blob/master/img/logo.png" width="380"></p>
 
+[![Build Status](https://travis-ci.com/amiremohamadi/DuckX.svg?branch=master)](https://travis-ci.com/amiremohamadi/DuckX)
+
 # DuckX
 
 **DuckX** is a library for creation of Office docx files
