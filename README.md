@@ -45,7 +45,7 @@ In order to use and compile duckx you need to have zlib.
 #### Download dependencies
 
 ```bash
-sudo dnf install g++  # for ubuntu
+sudo apt-get install g++  # for ubuntu
 sudo apt-get install zlib-dev  # for ubuntu
 
 sudo dnf install gcc-c++  # for fedora
