@@ -21,11 +21,17 @@ Here's an example of how to use duckx to read a docx file; It opens a docx file 
 #include <duckx.hpp>
 
 int main() {
+<<<<<<< HEAD
     Document doc("file.docx");   
+=======
+    Document doc("file.docx");    
+>>>>>>> 9e62332e2b66a235b8d6205dbf0d940668328691
     doc.open();
 
     for (auto p = doc.paragraphs(); p.hasNext() ; p.next()) {
-        std::cout << p.runs().text() << std::endl;
+	for (auto r = p.runs(); r.hasNext(); r.next()) {
+            std::cout << r.text() << std::endl;
+        }
     }
 }
 ```
