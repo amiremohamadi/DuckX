@@ -18,10 +18,11 @@
 Here's an example of how to use duckx to read a docx file; It opens a docx file named **file.docx** and goes over paragraphs and runs and prints them:
 ```c++
 #include <iostream>
-#include "duckx.hpp"
+#include <duckx.hpp>
 
 int main() {
-    Document doc("file.docx");    
+    Document doc("file.docx");   
+    doc.open();
 
     for (auto p = doc.paragraphs(); p.hasNext() ; p.next()) {
         std::cout << p.runs().text() << std::endl;
@@ -46,8 +47,8 @@ In order to use and compile duckx you need to have zlib.
 #### Download dependencies
 
 ```bash
-sudo dnf install g++  # for ubuntu
-sudo apt-get install zlib-dev  # for ubuntu
+sudo apt-get install g++  # for ubuntu
+sudo apt-get install libzip-dev  # for ubuntu
 
 sudo dnf install gcc-c++  # for fedora
 sudo dnf install zlib-devel  # for fedora
