@@ -9,6 +9,14 @@ const pugi::char_t *Run::text() {
     return this->current.child("w:t").text().get();
 }
 
+const Run& Run::next() {
+    this->current = this->current.next_sibling();
+    return *this;
+}
+
+bool Run::hasNext() {
+    return this->current != 0;
+}
 
 Paragraph::Paragraph() {}
 
