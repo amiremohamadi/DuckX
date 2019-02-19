@@ -24,6 +24,11 @@ public:
     void setParent(pugi::xml_node);
 
     const pugi::char_t *text();
+
+    const Run &next();
+    
+    bool hasNext();
+
 };
 
 // Paragraph contains a paragraph
