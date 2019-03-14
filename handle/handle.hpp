@@ -11,14 +11,18 @@
 #define HANDLE_H
 
 #include <zip.h>
+#include <string>
 
 class Handle {
 private:
     char *content;
+    std::string directory;
 
 public:
-    Handle(const char *);
+    Handle(std::string);
+
     char *getContent();
+    void replaceFile(std::string);
 };
 
 #endif

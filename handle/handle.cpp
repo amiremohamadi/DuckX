@@ -9,10 +9,11 @@
 
 #include "handle.hpp"
 
-Handle::Handle(const char *directory) {
+Handle::Handle(std::string directory) {
+    this->directory = directory;
     // Open the docx file (it's like a zip file!)
     int err = 0;
-    zip *z = zip_open(directory, 0, &err);
+    zip *z = zip_open(directory.c_str(), 0, &err);
 
     // This file contain contents
     // TODO: this variable must find the path from a rel file
@@ -41,4 +42,16 @@ Handle::Handle(const char *directory) {
 
 char *Handle::getContent() {
     return this->content;
+}
+
+void Handle::replaceFile(std::string file) {
+    zip_t *zipper = zip_open(directory.c_str(), 0, 0);
+
+    zip_source_t *source = zip_source_file(zipper, file.c_str(), 0, 0);
+    
+    if (zip_file_add(zipper, "word/documnet.xml", source, ZIP_FL_OVERWRITE) < 0) {
+        zip_source_free(source);
+    }
+
+    zip_close(zipper);
 }

@@ -49,11 +49,11 @@ Document::Document() {
     this->directory = "";
 }
 
-Document::Document(const char *directory) {
+Document::Document(std::string directory) {
     this->directory = directory;
 }
 
-void Document::file(const char *directory) {
+void Document::file(std::string directory) {
     this->directory = directory;
 }
 
@@ -67,6 +67,15 @@ void Document::open() {
     this->paragraph.setParent(
         document.child("w:document").child("w:body")
     );
+}
+
+void Document::save() {
+    this->document.save_file("document.xml");
+
+    Handle handle(this->directory);
+    handle.replaceFile("document.xml");
+
+    remove("document.xml");
 }
 
 Paragraph &Document::paragraphs() {
