@@ -7,6 +7,8 @@
 #ifndef DUCKX_H
 #define DUCKX_H
 
+#include <string>
+
 #include "pugixml/pugixml.hpp"
 #include "handle/handle.hpp"
 
@@ -57,15 +59,16 @@ public:
 // and stores paragraphs
 class Document {
 private:
-    const char *directory;
+    std::string directory;
     Paragraph paragraph;
     pugi::xml_document document;
     
 public:
     Document();
-    Document(const char *);
-    void file(const char *);
+    Document(std::string);
+    void file(std::string);
     void open();
+    void save();
 
     Paragraph &paragraphs();
 };
