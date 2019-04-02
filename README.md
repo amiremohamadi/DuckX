@@ -22,7 +22,7 @@ Here's an example of how to use duckx to read a docx file; It opens a docx file 
 
 int main() {
 
-    Document doc("file.docx");   
+    duckx::Document doc("file.docx");   
 
     doc.open();
 
