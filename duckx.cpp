@@ -1,26 +1,26 @@
 #include "duckx.hpp"
 
-void Run::setParent(pugi::xml_node node) {
+void duckx::Run::setParent(pugi::xml_node node) {
     this->parent = node;
     this->current = this->parent.child("w:r");
 }
 
-const pugi::char_t *Run::text() {
+const pugi::char_t *duckx::Run::text() {
     return this->current.child("w:t").text().get();
 }
 
-const Run& Run::next() {
+const duckx::Run& duckx::Run::next() {
     this->current = this->current.next_sibling();
     return *this;
 }
 
-bool Run::hasNext() {
+bool duckx::Run::hasNext() {
     return this->current != 0;
 }
 
-Paragraph::Paragraph() {}
+duckx::Paragraph::Paragraph() {}
 
-void Paragraph::setParent(pugi::xml_node node) {
+void duckx::Paragraph::setParent(pugi::xml_node node) {
     this->parent = node;
     this->current = this->parent.child("w:p");
     
@@ -29,35 +29,35 @@ void Paragraph::setParent(pugi::xml_node node) {
     );
 }
 
-const Paragraph &Paragraph::next() {
+const duckx::Paragraph &duckx::Paragraph::next() {
     this->current = this->current.next_sibling();
     this->run.setParent(this->current);
     return *this;
 }
 
-bool Paragraph::hasNext() {
+bool duckx::Paragraph::hasNext() {
     return this->current != 0;
 }
 
-Run &Paragraph::runs() {
+duckx::Run &duckx::Paragraph::runs() {
     return this->run;
 }
 
 
-Document::Document() {
+duckx::Document::Document() {
     // TODO: this function must be removed!
     this->directory = "";
 }
 
-Document::Document(std::string directory) {
+duckx::Document::Document(std::string directory) {
     this->directory = directory;
 }
 
-void Document::file(std::string directory) {
+void duckx::Document::file(std::string directory) {
     this->directory = directory;
 }
 
-void Document::open() {
+void duckx::Document::open() {
     Handle handle(this->directory);
 
     document.load_string(
@@ -69,7 +69,7 @@ void Document::open() {
     );
 }
 
-void Document::save() {
+void duckx::Document::save() {
     this->document.save_file("document.xml");
 
     Handle handle(this->directory);
@@ -78,6 +78,6 @@ void Document::save() {
     remove("document.xml");
 }
 
-Paragraph &Document::paragraphs() {
+duckx::Paragraph &duckx::Document::paragraphs() {
     return this->paragraph;
 }
