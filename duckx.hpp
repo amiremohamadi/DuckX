@@ -14,63 +14,65 @@
 
 // TODO: Use conatiner-iterator design pattern!
 
-// Run contains runs in a paragraph
-class Run {
-private:
-    // Store the parent node (a paragraph)
-    pugi::xml_node parent;
-    // And store current node also
-    pugi::xml_node current;
+namespace duckx {
+    // Run contains runs in a paragraph
+    class Run {
+    private:
+        // Store the parent node (a paragraph)
+        pugi::xml_node parent;
+        // And store current node also
+        pugi::xml_node current;
 
-public:
-    void setParent(pugi::xml_node);
+    public:
+        void setParent(pugi::xml_node);
 
-    const pugi::char_t *text();
+        const pugi::char_t *text();
 
-    const Run &next();
-    
-    bool hasNext();
+        const Run &next();
+        
+        bool hasNext();
 
-};
+    };
 
-// Paragraph contains a paragraph
-// and stores runs
-class Paragraph {
-private:
-    // Store parent node (usually the body node)
-    pugi::xml_node parent;
-    // And store current node also
-    pugi::xml_node current;
-    // A paragraph consists of runs
-    Run run;
+    // Paragraph contains a paragraph
+    // and stores runs
+    class Paragraph {
+    private:
+        // Store parent node (usually the body node)
+        pugi::xml_node parent;
+        // And store current node also
+        pugi::xml_node current;
+        // A paragraph consists of runs
+        Run run;
 
-public:
-    Paragraph();
-    void setParent(pugi::xml_node);
+    public:
+        Paragraph();
+        void setParent(pugi::xml_node);
 
-    const Paragraph &next();
+        const Paragraph &next();
 
-    bool hasNext();
+        bool hasNext();
 
-    Run &runs();
-};
+        Run &runs();
+    };
 
-// Document conatins whole the docx file
-// and stores paragraphs
-class Document {
-private:
-    std::string directory;
-    Paragraph paragraph;
-    pugi::xml_document document;
-    
-public:
-    Document();
-    Document(std::string);
-    void file(std::string);
-    void open();
-    void save();
+    // Document conatins whole the docx file
+    // and stores paragraphs
+    class Document {
+    private:
+        std::string directory;
+        Paragraph paragraph;
+        pugi::xml_document document;
+        
+    public:
+        Document();
+        Document(std::string);
+        void file(std::string);
+        void open();
+        void save();
 
-    Paragraph &paragraphs();
-};
+        Paragraph &paragraphs();
+    };
+}
 
 #endif
