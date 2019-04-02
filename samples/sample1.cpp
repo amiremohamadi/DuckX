@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-    Document doc("my_test.docx");
+    duckx::Document doc("my_test.docx");
     doc.open();
 
     for (auto p = doc.paragraphs(); p.hasNext(); p.next()) {
@@ -11,6 +11,8 @@ int main() {
             cout << r.text() << endl;
         }
     }
+
+    // doc.save();
 
     return 0;
 }
