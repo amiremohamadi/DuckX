@@ -7,6 +7,7 @@
 #ifndef DUCKX_H
 #define DUCKX_H
 
+#include <stdlib.h>
 #include <string>
 
 #include "pugixml.hpp"
