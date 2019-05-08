@@ -11,10 +11,11 @@ addons:
     packages:
       - gcc-6
       - g++-6
+      - cmake
       
-install:
-  - sudo apt-get install libzip-dev
 
 script:
   - mkdir build
-  - sudo make
+  - cd build
+  - cmake ..
+  - cmake --build .
