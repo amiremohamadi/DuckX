@@ -46,17 +46,7 @@ g++ sample1.cpp -lduckx
 
 ## Install ##
 
-In order to use and compile duckx you need to have zlib.
-
-#### Download dependencies
-
-```bash
-sudo apt-get install g++  # for ubuntu
-sudo apt-get install libzip-dev  # for ubuntu
-
-sudo dnf install gcc-c++  # for fedora
-sudo dnf install zlib-devel  # for fedora
-```
+It's easy as pie!
 
 #### Compiling
 
@@ -65,12 +55,14 @@ The preferred way is to create a build folder
 git clone https://github.com/amiremohamadi/DuckX.git
 cd DuckX
 mkdir build
-sudo make
+cd build
+cmake ..
+cmkae --build
 ```
 
 ## Requirements ##
 
-- [libzip](https://github.com/nih-at/libzip)
+- [zip](https://github.com/kuba--/zip)
 - [pugixml](https://github.com/zeux/pugixml)
 
 
