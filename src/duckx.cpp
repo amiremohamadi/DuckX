@@ -58,11 +58,23 @@ void duckx::Document::file(std::string directory) {
 }
 
 void duckx::Document::open() {
-    Handle handle(this->directory);
+    void *buf = NULL;
+    size_t bufsize;
 
-    document.load_string(
-        handle.getContent()
+    // Open file and load "xml" content to the document variable
+    zip_t *zip = zip_open(this->directory.c_str(), 0, 'r');
+    
+    zip_entry_open(zip, "word/document.xml");
+    zip_entry_read(zip, &buf, &bufsize);
+    
+    zip_entry_close(zip);
+    zip_close(zip);
+
+    this->document.load_string(
+        (char *) buf
     );
+
+    free(buf);
 
     this->paragraph.setParent(
         document.child("w:document").child("w:body")
@@ -70,12 +82,13 @@ void duckx::Document::open() {
 }
 
 void duckx::Document::save() {
-    this->document.save_file("document.xml");
+    // TODO: complete this!
+    // this->document.save_file("document.xml");
 
-    Handle handle(this->directory);
-    handle.replaceFile("document.xml");
+    // Handle handle(this->directory);
+    // handle.replaceFile("document.xml");
 
-    remove("document.xml");
+    // remove("document.xml");
 }
 
 duckx::Paragraph &duckx::Document::paragraphs() {

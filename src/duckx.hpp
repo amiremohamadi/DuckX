@@ -9,8 +9,9 @@
 
 #include <string>
 
-#include "pugixml/pugixml.hpp"
-#include "handle/handle.hpp"
+#include "pugixml.hpp"
+#include "zip.h"
+
 
 // TODO: Use conatiner-iterator design pattern!
 
@@ -63,7 +64,7 @@ namespace duckx {
         std::string directory;
         Paragraph paragraph;
         pugi::xml_document document;
-        
+
     public:
         Document();
         Document(std::string);
