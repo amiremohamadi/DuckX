@@ -1,5 +1,18 @@
 #include "duckx.hpp"
 
+// Hack on pugixml
+// We need to write xml to std string (or char *)
+// So overload the write function
+struct xml_string_writer: pugi::xml_writer
+{
+    std::string result;
+
+    virtual void write(const void* data, size_t size)
+    {
+        result.append(static_cast<const char*>(data), size);
+    }
+};
+
 void duckx::Run::setParent(pugi::xml_node node) {
     this->parent = node;
     this->current = this->parent.child("w:r");
@@ -62,7 +75,7 @@ void duckx::Document::open() {
     size_t bufsize;
 
     // Open file and load "xml" content to the document variable
-    zip_t *zip = zip_open(this->directory.c_str(), 0, 'r');
+    zip_t *zip = zip_open(this->directory.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
     
     zip_entry_open(zip, "word/document.xml");
     zip_entry_read(zip, &buf, &bufsize);
@@ -82,13 +95,20 @@ void duckx::Document::open() {
 }
 
 void duckx::Document::save() {
-    // TODO: complete this!
-    // this->document.save_file("document.xml");
+    // Open file and replace "xml" content
+    zip_t *zip = zip_open(this->directory.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'a');
+    
+    zip_entry_open(zip, "word/document.xml");
+    
 
-    // Handle handle(this->directory);
-    // handle.replaceFile("document.xml");
+    xml_string_writer writer;
+    this->document.print(writer);
 
-    // remove("document.xml");
+    const char *buf = writer.result.c_str();
+    zip_entry_write(zip, buf, strlen(buf));
+    
+    zip_entry_close(zip);
+    zip_close(zip);
 }
 
 duckx::Paragraph &duckx::Document::paragraphs() {
