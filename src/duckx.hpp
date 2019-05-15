@@ -28,10 +28,9 @@ namespace duckx {
     public:
         void set_parent(pugi::xml_node);
 
-        const pugi::char_t *text();
-
-        const Run &next();
+        std::string get_text();
         
+        const Run &next();
         bool has_next();
 
     };

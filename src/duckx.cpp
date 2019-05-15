@@ -16,7 +16,7 @@ void duckx::Run::set_parent(pugi::xml_node node) {
     this->current = this->parent.child("w:r");
 }
 
-const pugi::char_t *duckx::Run::text() {
+std::string duckx::Run::get_text() {
     return this->current.child("w:t").text().get();
 }
 
