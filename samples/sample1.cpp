@@ -1,18 +1,16 @@
 #include <iostream>
-#include <duckx.hpp>
+#include "../src/duckx.hpp"
 using namespace std;
 
 int main() {
     duckx::Document doc("my_test.docx");
     doc.open();
 
-    for (auto p = doc.paragraphs(); p.hasNext(); p.next()) {
-        for (auto r = p.runs(); r.hasNext(); r.next()) {
+    for (auto p = doc.paragraphs(); p.has_next(); p.next()) {
+        for (auto r = p.runs(); r.has_next(); r.next()) {
             cout << r.text() << endl;
         }
     }
-
-    // doc.save();
 
     return 0;
 }
