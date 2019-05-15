@@ -26,13 +26,13 @@ namespace duckx {
         pugi::xml_node current;
 
     public:
-        void setParent(pugi::xml_node);
+        void set_parent(pugi::xml_node);
 
         const pugi::char_t *text();
 
         const Run &next();
         
-        bool hasNext();
+        bool has_next();
 
     };
 
@@ -49,11 +49,11 @@ namespace duckx {
 
     public:
         Paragraph();
-        void setParent(pugi::xml_node);
+        void set_parent(pugi::xml_node);
 
         const Paragraph &next();
 
-        bool hasNext();
+        bool has_next();
 
         Run &runs();
     };
