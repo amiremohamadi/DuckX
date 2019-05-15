@@ -20,6 +20,14 @@ std::string duckx::Run::get_text() {
     return this->current.child("w:t").text().get();
 }
 
+bool duckx::Run::set_text(std::string text) {
+    return this->current.child("w:t").text().set(text.c_str());
+}
+
+bool duckx::Run::set_text(const char *text) {
+    return this->current.child("w:t").text().set(text);
+}
+
 const duckx::Run& duckx::Run::next() {
     this->current = this->current.next_sibling();
     return *this;
