@@ -16,8 +16,21 @@ void duckx::Run::set_parent(pugi::xml_node node) {
     this->current = this->parent.child("w:r");
 }
 
-const pugi::char_t *duckx::Run::text() {
+void duckx::Run::set_current(pugi::xml_node node) {
+    this->current = node;
+}
+
+
+std::string duckx::Run::get_text() {
     return this->current.child("w:t").text().get();
+}
+
+bool duckx::Run::set_text(std::string text) {
+    return this->current.child("w:t").text().set(text.c_str());
+}
+
+bool duckx::Run::set_text(const char *text) {
+    return this->current.child("w:t").text().set(text);
 }
 
 const duckx::Run& duckx::Run::next() {
@@ -51,6 +64,21 @@ bool duckx::Paragraph::has_next() {
 }
 
 duckx::Run &duckx::Paragraph::runs() {
+    this->run.set_parent(
+        this->current
+    );
+    return this->run;
+}
+
+duckx::Run &duckx::Paragraph::add_run(std::string text) {
+    // Add new run
+    pugi::xml_node new_run = this->current.append_child("w:r");
+    // Insert meta to new run
+    new_run.append_child("w:rPr");
+    pugi::xml_node new_run_text = new_run.append_child("w:t");
+    new_run_text.text().set(text.c_str());
+
+    this->run.set_current(new_run);
     return this->run;
 }
 
@@ -110,5 +138,8 @@ void duckx::Document::save() {
 }
 
 duckx::Paragraph &duckx::Document::paragraphs() {
+    this->paragraph.set_parent(
+        document.child("w:document").child("w:body")
+    );
     return this->paragraph;
 }
