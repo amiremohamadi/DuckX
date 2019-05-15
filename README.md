@@ -11,7 +11,7 @@
 ## Status ##
 
 - Documents (docx) [Word]
-	- Read
+	- Read/Write/Edit
 
 ## Quick Start
 
