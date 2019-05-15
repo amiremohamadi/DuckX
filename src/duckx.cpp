@@ -3,17 +3,15 @@
 // Hack on pugixml
 // We need to write xml to std string (or char *)
 // So overload the write function
-struct xml_string_writer: pugi::xml_writer
-{
+struct xml_string_writer: pugi::xml_writer {
     std::string result;
 
-    virtual void write(const void* data, size_t size)
-    {
+    virtual void write(const void* data, size_t size) {
         result.append(static_cast<const char*>(data), size);
     }
 };
 
-void duckx::Run::setParent(pugi::xml_node node) {
+void duckx::Run::set_parent(pugi::xml_node node) {
     this->parent = node;
     this->current = this->parent.child("w:r");
 }
@@ -27,28 +25,28 @@ const duckx::Run& duckx::Run::next() {
     return *this;
 }
 
-bool duckx::Run::hasNext() {
+bool duckx::Run::has_next() {
     return this->current != 0;
 }
 
 duckx::Paragraph::Paragraph() {}
 
-void duckx::Paragraph::setParent(pugi::xml_node node) {
+void duckx::Paragraph::set_parent(pugi::xml_node node) {
     this->parent = node;
     this->current = this->parent.child("w:p");
     
-    this->run.setParent(
+    this->run.set_parent(
         this->current
     );
 }
 
 const duckx::Paragraph &duckx::Paragraph::next() {
     this->current = this->current.next_sibling();
-    this->run.setParent(this->current);
+    this->run.set_parent(this->current);
     return *this;
 }
 
-bool duckx::Paragraph::hasNext() {
+bool duckx::Paragraph::has_next() {
     return this->current != 0;
 }
 
@@ -89,7 +87,7 @@ void duckx::Document::open() {
 
     free(buf);
 
-    this->paragraph.setParent(
+    this->paragraph.set_parent(
         document.child("w:document").child("w:body")
     );
 }
