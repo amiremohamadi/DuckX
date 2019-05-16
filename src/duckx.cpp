@@ -11,6 +11,14 @@ struct xml_string_writer: pugi::xml_writer {
     }
 };
 
+
+duckx::Run::Run() {}
+
+duckx::Run::Run(pugi::xml_node parent, pugi::xml_node current) {
+    this->set_parent(parent);
+    this->set_current(current);
+}
+
 void duckx::Run::set_parent(pugi::xml_node node) {
     this->parent = node;
     this->current = this->parent.child("w:r");
@@ -78,8 +86,7 @@ duckx::Run &duckx::Paragraph::add_run(std::string text) {
     pugi::xml_node new_run_text = new_run.append_child("w:t");
     new_run_text.text().set(text.c_str());
 
-    this->run.set_current(new_run);
-    return this->run;
+    return *new Run(this->current, new_run);
 }
 
 

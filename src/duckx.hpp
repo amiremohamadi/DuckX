@@ -26,6 +26,8 @@ namespace duckx {
         pugi::xml_node current;
 
     public:
+        Run();
+        Run(pugi::xml_node, pugi::xml_node);
         void set_parent(pugi::xml_node);
         void set_current(pugi::xml_node);
 
