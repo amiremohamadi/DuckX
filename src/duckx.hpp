@@ -26,6 +26,8 @@ namespace duckx {
         pugi::xml_node current;
 
     public:
+        Run();
+        Run(pugi::xml_node, pugi::xml_node);
         void set_parent(pugi::xml_node);
         void set_current(pugi::xml_node);
 
@@ -33,7 +35,7 @@ namespace duckx {
         bool set_text(std::string);
         bool set_text(const char *);
 
-        const Run &next();
+        Run &next();
         bool has_next();
     };
 
@@ -50,13 +52,17 @@ namespace duckx {
 
     public:
         Paragraph();
+        Paragraph(pugi::xml_node, pugi::xml_node);
         void set_parent(pugi::xml_node);
+        void set_current(pugi::xml_node);
 
-        const Paragraph &next();
+        Paragraph &next();
         bool has_next();
 
         Run &runs();
         Run &add_run(std::string);
+        Run &add_run(const char*);
+        Paragraph &insert_paragraph_after(std::string);
     };
 
     // Document conatins whole the docx file
