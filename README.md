@@ -62,7 +62,7 @@ cmkae --build
 
 ## Requirements ##
 
-- [zip](https://github.com/kuba--/zip)
+- [libzip](https://libzip.org)
 - [pugixml](https://github.com/zeux/pugixml)
 
 
