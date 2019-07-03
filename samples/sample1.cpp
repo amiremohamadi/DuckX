@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../src/duckx.hpp"
+
 using namespace std;
 
 int main() {
@@ -8,7 +9,7 @@ int main() {
 
     for (auto p = doc.paragraphs(); p.has_next(); p.next()) {
         for (auto r = p.runs(); r.has_next(); r.next()) {
-            cout << r.text() << endl;
+            cout << r.get_text() << endl;
         }
     }
 

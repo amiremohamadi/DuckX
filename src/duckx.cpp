@@ -3,11 +3,11 @@
 // Hack on pugixml
 // We need to write xml to std string (or char *)
 // So overload the write function
-struct xml_string_writer: pugi::xml_writer {
+struct xml_string_writer : pugi::xml_writer {
     std::string result;
 
-    virtual void write(const void* data, size_t size) {
-        result.append(static_cast<const char*>(data), size);
+    virtual void write(const void *data, size_t size) {
+        result.append(static_cast<const char *>(data), size);
     }
 };
 
@@ -33,7 +33,7 @@ std::string duckx::Run::get_text() {
     return this->current.child("w:t").text().get();
 }
 
-bool duckx::Run::set_text(std::string text) {
+bool duckx::Run::set_text(const std::string &text) {
     return this->current.child("w:t").text().set(text.c_str());
 }
 
@@ -41,7 +41,7 @@ bool duckx::Run::set_text(const char *text) {
     return this->current.child("w:t").text().set(text);
 }
 
-duckx::Run& duckx::Run::next() {
+duckx::Run &duckx::Run::next() {
     this->current = this->current.next_sibling();
     return *this;
 }
@@ -60,9 +60,9 @@ duckx::Paragraph::Paragraph(pugi::xml_node parent, pugi::xml_node current) {
 void duckx::Paragraph::set_parent(pugi::xml_node node) {
     this->parent = node;
     this->current = this->parent.child("w:p");
-    
+
     this->run.set_parent(
-        this->current
+            this->current
     );
 }
 
@@ -82,12 +82,12 @@ bool duckx::Paragraph::has_next() {
 
 duckx::Run &duckx::Paragraph::runs() {
     this->run.set_parent(
-        this->current
+            this->current
     );
     return this->run;
 }
 
-duckx::Run &duckx::Paragraph::add_run(std::string text) {
+duckx::Run &duckx::Paragraph::add_run(const std::string &text) {
     return this->add_run(text.c_str());
 }
 
@@ -102,9 +102,9 @@ duckx::Run &duckx::Paragraph::add_run(const char *text) {
     return *new Run(this->current, new_run);
 }
 
-duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(std::string text) {
+duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string &text) {
     pugi::xml_node new_para = this->parent.insert_child_after("w:p", this->current);
-    
+
     Paragraph *p = new Paragraph();
     p->set_current(new_para);
     p->add_run(text);
@@ -113,64 +113,69 @@ duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(std::string text) {
 }
 
 
-
 duckx::Document::Document() {
     // TODO: this function must be removed!
     this->directory = "";
 }
 
-duckx::Document::Document(std::string directory) {
+duckx::Document::Document(const std::string &directory) {
     this->directory = directory;
 }
 
-void duckx::Document::file(std::string directory) {
+void duckx::Document::file(const std::string &directory) {
     this->directory = directory;
 }
 
 void duckx::Document::open() {
     void *buf = NULL;
-    size_t bufsize;
-
-    // Open file and load "xml" content to the document variable
-    zip_t *zip = zip_open(this->directory.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
-    
-    zip_entry_open(zip, "word/document.xml");
-    zip_entry_read(zip, &buf, &bufsize);
-    
-    zip_entry_close(zip);
-    zip_close(zip);
-
+    int err = 0;
+    zip_t *zip = zip_open(this->directory.c_str(), ZIP_RDONLY, &err);
+    if (zip == nullptr) {
+        return;
+    }
+    zip_stat_t st;
+    zip_stat_init(&st);
+    zip_stat(zip, "word/document.xml", 0, &st);
+    zip_file_t *zfile = zip_fopen_index(zip, st.index, 0);
+    buf = malloc(st.size);
+    zip_fread(zfile, buf, st.size);
+    zip_fclose(zfile);
     this->document.load_string(
-        (char *) buf
+            (char *) buf
     );
 
     free(buf);
-
+    zip_close(zip);
     this->paragraph.set_parent(
-        document.child("w:document").child("w:body")
+            document.child("w:document").child("w:body")
     );
 }
 
 void duckx::Document::save() {
     // Open file and replace "xml" content
-    zip_t *zip = zip_open(this->directory.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'a');
-    
-    zip_entry_open(zip, "word/document.xml");
-    
+    int err = 0;
+    zip_t *zip = zip_open(this->directory.c_str(), 0, &err);
+    if (zip == nullptr) {
+        return;
+    }
+    zip_stat_t st;
+    zip_stat_init(&st);
+    zip_stat(zip, "word/document.xml", 0, &st);
 
     xml_string_writer writer;
     this->document.print(writer);
 
     const char *buf = writer.result.c_str();
-    zip_entry_write(zip, buf, strlen(buf));
-    
-    zip_entry_close(zip);
+    zip_error_t error = {0};
+    zip_source_t *source = zip_source_buffer_create(buf, writer.result.length(), 0, &error);
+    zip_file_replace(zip, st.index, source, ZIP_FL_OVERWRITE | ZIP_FL_ENC_UTF_8);
+    zip_source_close(source);
     zip_close(zip);
 }
 
 duckx::Paragraph &duckx::Document::paragraphs() {
     this->paragraph.set_parent(
-        document.child("w:document").child("w:body")
+            document.child("w:document").child("w:body")
     );
     return this->paragraph;
 }

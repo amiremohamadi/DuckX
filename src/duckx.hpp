@@ -9,9 +9,9 @@
 
 #include <stdlib.h>
 #include <string>
+#include <zip.h>
 
 #include "pugixml.hpp"
-#include "zip.h"
 
 
 // TODO: Use conatiner-iterator design pattern!
@@ -27,15 +27,21 @@ namespace duckx {
 
     public:
         Run();
+
         Run(pugi::xml_node, pugi::xml_node);
+
         void set_parent(pugi::xml_node);
+
         void set_current(pugi::xml_node);
 
         std::string get_text();
-        bool set_text(std::string);
+
+        bool set_text(const std::string &);
+
         bool set_text(const char *);
 
         Run &next();
+
         bool has_next();
     };
 
@@ -52,17 +58,24 @@ namespace duckx {
 
     public:
         Paragraph();
+
         Paragraph(pugi::xml_node, pugi::xml_node);
+
         void set_parent(pugi::xml_node);
+
         void set_current(pugi::xml_node);
 
         Paragraph &next();
+
         bool has_next();
 
         Run &runs();
-        Run &add_run(std::string);
-        Run &add_run(const char*);
-        Paragraph &insert_paragraph_after(std::string);
+
+        Run &add_run(const std::string &);
+
+        Run &add_run(const char *);
+
+        Paragraph &insert_paragraph_after(const std::string &);
     };
 
     // Document conatins whole the docx file
@@ -75,9 +88,13 @@ namespace duckx {
 
     public:
         Document();
-        Document(std::string);
-        void file(std::string);
+
+        Document(const std::string &);
+
+        void file(const std::string &);
+
         void open();
+
         void save();
 
         Paragraph &paragraphs();
