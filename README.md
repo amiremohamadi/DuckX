@@ -27,7 +27,7 @@ int main() {
     doc.open();
 
     for (auto p = doc.paragraphs(); p.hasNext() ; p.next()) {
-	for (auto r = p.runs(); r.hasNext(); r.next()) {
+	for (auto r = p.runs(); r.has_next(); r.next()) {
             std::cout << r.text() << std::endl;
         }
     }
