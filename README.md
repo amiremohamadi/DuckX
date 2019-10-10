@@ -57,7 +57,7 @@ cd DuckX
 mkdir build
 cd build
 cmake ..
-cmake --build
+cmake --build .
 ```
 
 ## Requirements ##
