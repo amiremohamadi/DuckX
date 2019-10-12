@@ -8,7 +8,7 @@ int main() {
 
     for (auto p = doc.paragraphs(); p.has_next(); p.next()) {
         for (auto r = p.runs(); r.has_next(); r.next()) {
-            cout << r.tget_ext() << endl;
+            cout << r.get_ext() << endl;
         }
     }
 
