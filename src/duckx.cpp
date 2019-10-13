@@ -50,6 +50,118 @@ bool duckx::Run::has_next() {
     return this->current != 0;
 }
 
+// Table cells
+duckx::TableCell::TableCell() {}
+
+duckx::TableCell::TableCell(pugi::xml_node parent, pugi::xml_node current) {
+	this->set_parent(parent);
+	this->set_current(current);
+}
+
+void duckx::TableCell::set_parent(pugi::xml_node node) {
+	this->parent = node;
+	this->current = this->parent.child("w:tc");
+
+	this->paragraph.set_parent(
+		this->current
+	);
+}
+
+void duckx::TableCell::set_current(pugi::xml_node node) {
+	this->current = node;
+}
+
+bool duckx::TableCell::has_next() {
+	return this->current != 0;
+}
+
+duckx::TableCell& duckx::TableCell::next() {
+	this->current = this->current.next_sibling();
+	return *this;
+}
+
+duckx::Paragraph& duckx::TableCell::paragraphs() {
+	this->paragraph.set_parent(
+		this->current
+	);
+	return this->paragraph;
+}
+
+// Table rows
+duckx::TableRow::TableRow() {}
+
+duckx::TableRow::TableRow(pugi::xml_node parent, pugi::xml_node current) {
+	this->set_parent(parent);
+	this->set_current(current);
+}
+
+void duckx::TableRow::set_parent(pugi::xml_node node) {
+	this->parent = node;
+	this->current = this->parent.child("w:tr");
+
+	this->cell.set_parent(
+		this->current
+	);
+}
+
+void duckx::TableRow::set_current(pugi::xml_node node) {
+	this->current = node;
+}
+
+duckx::TableRow& duckx::TableRow::next() {
+	this->current = this->current.next_sibling();
+	return *this;
+}
+
+duckx::TableCell& duckx::TableRow::cells() {
+	this->cell.set_parent(
+		this->current
+	);
+	return this->cell;
+}
+
+bool duckx::TableRow::has_next() {
+	return this->current != 0;
+}
+
+// Tables
+duckx::Table::Table() {}
+
+duckx::Table::Table(pugi::xml_node parent, pugi::xml_node current) {
+	this->set_parent(parent);
+	this->set_current(current);
+}
+
+void duckx::Table::set_parent(pugi::xml_node node) {
+	this->parent = node;
+	this->current = this->parent.child("w:tbl");
+
+	this->row.set_parent(
+		this->current
+	);
+}
+
+bool duckx::Table::has_next() {
+	return this->current != 0;
+}
+
+duckx::Table& duckx::Table::next() {
+	this->current = this->current.next_sibling();
+	this->row.set_parent(this->current);
+	return *this;
+}
+
+void duckx::Table::set_current(pugi::xml_node node) {
+	this->current = node;
+}
+
+duckx::TableRow& duckx::Table::rows() {
+	this->row.set_parent(
+		this->current
+	);
+	return this->row;
+}
+
 duckx::Paragraph::Paragraph() {}
 
 duckx::Paragraph::Paragraph(pugi::xml_node parent, pugi::xml_node current) {
@@ -173,4 +285,11 @@ duckx::Paragraph &duckx::Document::paragraphs() {
         document.child("w:document").child("w:body")
     );
     return this->paragraph;
+}
+
+duckx::Table& duckx::Document::tables() {
+	this->table.set_parent(
+		document.child("w:document").child("w:body")
+	);
+	return this->table;
 }
