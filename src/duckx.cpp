@@ -183,12 +183,10 @@ void duckx::Document::save() {
 	int orig_zip_entry_ct = zip_total_entries(orig_zip);
 	for (int i = 0; i < orig_zip_entry_ct; i++)
 	{
-		void* orig_entry_data;
 		zip_entry_openbyindex(orig_zip, i);
 		const char* name = zip_entry_name(orig_zip);
 		// Skip copying the original file
-		if (std::string(name) != std::string("word/document.xml") 
-			&& std::string(name) != std::string("/word/document.xml"))
+		if (std::string(name) != std::string("word/document.xml"))
 		{
 			// Read the old content
 			void* entry_buf;
