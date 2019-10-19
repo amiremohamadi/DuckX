@@ -32,3 +32,15 @@ install(
     )
 
 install(FILES ${HEADERS} DESTINATION include)
+
+include_directories(src)
+
+include(cmake/googletest.cmake)
+
+fetch_googletest(
+		${PROJECT_SOURCE_DIR}/cmake
+		${PROJECT_BINARY_DIR}/googletest
+)
+
+enable_testing()
+add_subdirectory(test)
