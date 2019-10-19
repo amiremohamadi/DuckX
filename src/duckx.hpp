@@ -65,12 +65,70 @@ namespace duckx {
         Paragraph &insert_paragraph_after(std::string);
     };
 
+	// TableCell contains one or more paragraphs
+	class TableCell {
+	private:
+		pugi::xml_node parent;
+		pugi::xml_node current;
+
+		Paragraph paragraph;
+	public:
+		TableCell();
+		TableCell(pugi::xml_node, pugi::xml_node);
+
+		void set_parent(pugi::xml_node);
+		void set_current(pugi::xml_node);
+
+		Paragraph& paragraphs();
+
+		TableCell& next();
+		bool has_next();
+	};
+
+	// TableRow consists of one or more TableCells
+	class TableRow {
+		pugi::xml_node parent;
+		pugi::xml_node current;
+
+		TableCell cell;
+	public:
+		TableRow();
+		TableRow(pugi::xml_node, pugi::xml_node);
+		void set_parent(pugi::xml_node);
+		void set_current(pugi::xml_node);
+
+		TableCell& cells();
+
+		bool has_next();
+		TableRow& next();
+	};
+
+	// Table consists of one or more TableRow objects
+	class Table {
+	private:
+		pugi::xml_node parent;
+		pugi::xml_node current;
+
+		TableRow row;
+	public:
+		Table();
+		Table(pugi::xml_node, pugi::xml_node);
+		void set_parent(pugi::xml_node);
+		void set_current(pugi::xml_node);
+
+		Table& next();
+		bool has_next();
+
+		TableRow& rows();
+	};
+
     // Document conatins whole the docx file
     // and stores paragraphs
     class Document {
     private:
         std::string directory;
         Paragraph paragraph;
+		Table table;
         pugi::xml_document document;
 
     public:
@@ -81,6 +139,7 @@ namespace duckx {
         void save();
 
         Paragraph &paragraphs();
+		Table& tables();
     };
 }
 
