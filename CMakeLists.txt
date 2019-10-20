@@ -15,6 +15,13 @@ else()
     add_library(duckx STATIC ${HEADERS} ${SOURCES})
 endif()
 
+add_library(duckx::duckx ALIAS duckx)
+
+target_include_directories(duckx PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
+)
+
 mark_as_advanced(CLEAR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR)
 
 if (BUILD_SAMPLE)
@@ -24,11 +31,13 @@ if (BUILD_SAMPLE)
 	target_link_libraries(duckx_sample duckx)
 endif()
 
+include(GNUInstallDirs)
 install(
-    TARGETS ${LIBRARY}
+    TARGETS duckx
+    EXPORT duckxConfig
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}${INSTALL_SUFFIX}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${INSTALL_SUFFIX}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
-
+install(EXPORT duckxConfig NAMESPACE duckx:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/duckx)
 install(FILES ${HEADERS} DESTINATION include)
