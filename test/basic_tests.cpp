@@ -7,8 +7,8 @@ TEST(basic_test, test1) {
 
     std::ostringstream ss;
 
-    for (auto p = doc.paragraphs(); p.has_next(); p.next()) {
-        for (auto r = p.runs(); r.has_next(); r.next()) {
+    for (duckx::Paragraph p = doc.paragraphs(); p.has_next(); p.next()) {
+        for (duckx::Run r = p.runs(); r.has_next(); r.next()) {
             ss << r.get_text() << std::endl;
         }
     }
