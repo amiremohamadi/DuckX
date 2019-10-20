@@ -31,6 +31,7 @@ if (BUILD_SAMPLE)
 	target_link_libraries(duckx_sample duckx)
 endif()
 
+include(GNUInstallDirs)
 install(
     TARGETS duckx
     EXPORT duckxConfig
