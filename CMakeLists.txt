@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.0)
 
 project(duckx VERSION 0.2)
 
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+	include(CTest)
+endif()
+
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_SAMPLE "Build provided sample" OFF)
 
@@ -44,5 +48,8 @@ install(FILES ${HEADERS} DESTINATION include)
 
 include_directories(src)
 
-enable_testing()
-add_subdirectory(test)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+	enable_testing()
+	add_subdirectory(test)
+endif()
+
