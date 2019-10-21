@@ -69,3 +69,4 @@ cmake --build .
 ### Licensing
 
 This library is available to anybody free of charge, under the terms of MIT License (see LICENSE.md).
+
