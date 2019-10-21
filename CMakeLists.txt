@@ -46,7 +46,6 @@ install(
 install(EXPORT duckxConfig NAMESPACE duckx:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/duckx)
 install(FILES ${HEADERS} DESTINATION include)
 
-include_directories(src)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
 	enable_testing()
