@@ -2,11 +2,15 @@ cmake_minimum_required(VERSION 3.0)
 
 project(duckx VERSION 0.2)
 
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+	include(CTest)
+endif()
+
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_SAMPLE "Build provided sample" OFF)
 
 set(HEADERS src/duckx.hpp src/zip.h src/miniz.h
-     src/pugixml.hpp src/pugiconfig.hpp)
+	src/pugixml.hpp src/pugiconfig.hpp)
 set(SOURCES src/duckx.cpp src/zip.c src/pugixml.cpp)
 
 if(BUILD_SHARED_LIBS)
@@ -42,7 +46,9 @@ install(
 install(EXPORT duckxConfig NAMESPACE duckx:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/duckx)
 install(FILES ${HEADERS} DESTINATION include)
 
-include_directories(src)
 
-enable_testing()
-add_subdirectory(test)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+	enable_testing()
+	add_subdirectory(test)
+endif()
+
