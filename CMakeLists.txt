@@ -10,7 +10,7 @@ option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_SAMPLE "Build provided sample" OFF)
 
 set(HEADERS src/duckx.hpp src/zip.h src/miniz.h
-     src/pugixml.hpp src/pugiconfig.hpp)
+	src/pugixml.hpp src/pugiconfig.hpp)
 set(SOURCES src/duckx.cpp src/zip.c src/pugixml.cpp)
 
 if(BUILD_SHARED_LIBS)
