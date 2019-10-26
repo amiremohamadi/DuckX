@@ -7,37 +7,55 @@
 #ifndef DUCKXITERATOR_H
 #define DUCKXITERATOR_H
 
-namespace duckx {
+namespace duckx
+{
 	template <class T>
-	class Iterator {
-	private:
-		T* _obj = nullptr;
-
+	class Iterator
+	{
+	protected:
+		T _obj{};
 	public:
 		Iterator() = default;
-		Iterator(T& obj) : _obj(&obj) {}
 
-		// We only care comparator against end.
-		bool operator!=(const Iterator&) const { return _obj != nullptr; }
-
-		// Check against the end
-		void operator++() {
-			_obj->next();
-			if (!_obj->has_next()) {
-				_obj = nullptr;
-			}
+		explicit Iterator(T obj) : _obj(std::move(obj))
+		{
 		}
 
-		auto operator*() const -> T & { return *_obj; }
+		bool operator!=(const Iterator& other) const
+		{
+			// Check if valid
+			if (_obj.has_next() || other._obj.has_next())
+			{
+				return _obj.parent != other._obj.parent || _obj.current != other._obj.current;
+			}
+			return false;
+		}
 
-		auto operator-> () const -> T* { return _obj; }
+		bool operator==(const Iterator& other) const
+		{
+			return !((*this) != other);
+		}
+
+		// Check against the end
+		Iterator& operator++() { _obj.next(); return *this;}
+
+		auto operator*() const -> T const& { return _obj; }
+
+		auto operator->() const -> T const* { return &_obj; }
 	};
 
-	// Entry points for loops
+	// Entry point
 	template <class T>
-	auto begin(T& obj) { return Iterator<T>(obj); }
+	auto begin(T obj)
+	{
+		return Iterator<T>(std::move(obj));
+	}
+
 	template <class T>
-	auto end(T&) { return Iterator<T>(); }
-}
+	auto end(T)
+	{
+		return Iterator<T>();
+	}
+} // namespace duckx
 
 #endif

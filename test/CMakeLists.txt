@@ -17,4 +17,21 @@ add_test(
     unit_tests
 )
 
+add_executable(
+    iterator_tests
+    iterator_tests.cpp
+)
+
+target_link_libraries(
+    iterator_tests
+    duckx
+)
+
+add_test(
+    NAME
+    iterator
+    COMMAND
+    iterator_tests
+)
+
 configure_file(my_test.docx ${CMAKE_CURRENT_BINARY_DIR}/my_test.docx COPYONLY)
