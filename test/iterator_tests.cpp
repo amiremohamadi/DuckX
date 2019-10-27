@@ -29,6 +29,8 @@ struct MyTestObject final {
 	int current = 42;
 	int parent = 1;
 	int j = 86;
+	MyTestObject(int parent, int current) : parent(parent), current(current){}
+	MyTestObject() = default;
 	MyTestObject& next() { ++current; return *this;}
 	bool has_next() const { return current!=j;}
 	bool operator== (MyTestObject const& other) const {return other.current==current && other.j==j;}

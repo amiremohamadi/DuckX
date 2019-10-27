@@ -10,52 +10,78 @@
 namespace duckx
 {
 	template <class T>
-	class Iterator
-	{
-	protected:
-		T _obj{};
+	class Iterator {
+	private:
+		using ParentType = decltype(T::parent);
+		using CurrentType = decltype(T::current);
+        ParentType parent{0};
+        CurrentType current{0};
+		mutable T buffer{};
+
 	public:
 		Iterator() = default;
 
-		explicit Iterator(T obj) : _obj(std::move(obj))
+		Iterator(ParentType parent, CurrentType current) : parent(parent), current(current)
 		{
 		}
 
 		bool operator!=(const Iterator& other) const
 		{
-			// Check if valid
-			if (_obj.has_next() || other._obj.has_next())
-			{
-				return _obj.parent != other._obj.parent || _obj.current != other._obj.current;
-			}
-			return false;
+			return parent != other.parent || current != other.current;
 		}
 
 		bool operator==(const Iterator& other) const
 		{
-			return !((*this) != other);
+			return !this->operator!=(other);
 		}
 
-		// Check against the end
-		Iterator& operator++() { _obj.next(); return *this;}
+		Iterator& operator++() { 
+			this->current = this->current.next_sibling();
+			return *this;
+		}
 
-		auto operator*() const -> T const& { return _obj; }
+		auto operator*() const -> T const& { 
+			// Only update the buffer when the user wants to accces to the data
+			buffer.set_parent(parent);
+			buffer.set_current(current);
+			return buffer; 
+		}
 
-		auto operator->() const -> T const* { return &_obj; }
+		auto operator->() const -> T const* { 
+			return &(this->operator*()); 
+		}
+	};
+
+	class IteratorHelper {
+    private:
+        template <class T>
+        static Iterator<T> make_begin(T const& obj) {
+	        return Iterator<T>(obj.parent, obj.current);
+        }
+
+  		template <class T>
+        static Iterator<T> make_end(T const& obj) {
+            return Iterator<T>(obj.parent, static_cast<decltype(obj.current)>(0));
+        }
+
+        template <class T>
+        friend Iterator<T> begin(T const&);
+        template <class T>
+        friend Iterator<T> end(T const&);
 	};
 
 	// Entry point
 	template <class T>
-	auto begin(T obj)
+	auto begin(T const& obj) -> Iterator<T>
 	{
-		return Iterator<T>(std::move(obj));
+          return IteratorHelper::make_begin(obj);
 	}
 
 	template <class T>
-	auto end(T)
+	auto end(T const& obj) -> Iterator<T>
 	{
-		return Iterator<T>();
-	}
+          return IteratorHelper::make_end(obj);
+    }
 } // namespace duckx
 
 #endif

@@ -23,7 +23,7 @@ namespace duckx {
     // Run contains runs in a paragraph
     class Run {
     private:
-        friend class Iterator<Run>;
+        friend class IteratorHelper;
         // Store the parent node (a paragraph)
         pugi::xml_node parent;
         // And store current node also
@@ -47,7 +47,7 @@ namespace duckx {
     // and stores runs
     class Paragraph {
     private:
-        friend class Iterator<Paragraph>;
+        friend class IteratorHelper;
 		// Store parent node (usually the body node)
         pugi::xml_node parent;
         // And store current node also
@@ -73,7 +73,7 @@ namespace duckx {
 	// TableCell contains one or more paragraphs
 	class TableCell {
 	private:
-        friend class Iterator<TableCell>;
+        friend class IteratorHelper;
 		pugi::xml_node parent;
 		pugi::xml_node current;
 
@@ -93,7 +93,7 @@ namespace duckx {
 
 	// TableRow consists of one or more TableCells
 	class TableRow {
-        friend class Iterator<TableRow>;
+        friend class IteratorHelper;
 		pugi::xml_node parent;
 		pugi::xml_node current;
 
@@ -113,7 +113,7 @@ namespace duckx {
 	// Table consists of one or more TableRow objects
 	class Table {
 	private:
-        friend class Iterator<Table>;
+        friend class IteratorHelper;
 		pugi::xml_node parent;
 		pugi::xml_node current;
 
@@ -134,7 +134,7 @@ namespace duckx {
     // and stores paragraphs
     class Document {
     private:
-        friend class Iterator<Document>;
+        friend class IteratorHelper;
         std::string directory;
         Paragraph paragraph;
 		Table table;
