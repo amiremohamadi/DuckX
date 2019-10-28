@@ -33,7 +33,7 @@ namespace duckx {
         void set_current(pugi::xml_node);
 
         std::string get_text() const;
-        bool set_text(std::string) const;
+        bool set_text(const std::string&) const;
         bool set_text(const char *) const;
 
         Run &next();
@@ -61,9 +61,9 @@ namespace duckx {
         bool has_next() const;
 
         Run &runs();
-        Run &add_run(std::string);
+        Run &add_run(const std::string&);
         Run &add_run(const char*);
-        Paragraph &insert_paragraph_after(std::string);
+        Paragraph &insert_paragraph_after(const std::string&);
     };
 
 	// TableCell contains one or more paragraphs

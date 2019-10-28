@@ -33,7 +33,7 @@ std::string duckx::Run::get_text() const {
     return this->current.child("w:t").text().get();
 }
 
-bool duckx::Run::set_text(std::string text) const {
+bool duckx::Run::set_text(const std::string& text) const {
     return this->current.child("w:t").text().set(text.c_str());
 }
 
@@ -199,7 +199,7 @@ duckx::Run &duckx::Paragraph::runs() {
     return this->run;
 }
 
-duckx::Run &duckx::Paragraph::add_run(std::string text) {
+duckx::Run &duckx::Paragraph::add_run(const std::string& text) {
     return this->add_run(text.c_str());
 }
 
@@ -214,7 +214,7 @@ duckx::Run &duckx::Paragraph::add_run(const char *text) {
     return *new Run(this->current, new_run);
 }
 
-duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(std::string text) {
+duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text) {
     pugi::xml_node new_para = this->parent.insert_child_after("w:p", this->current);
     
     Paragraph *p = new Paragraph();
