@@ -1,7 +1,7 @@
 /*
  * Under MIT license
  * Author: Amir Mohamadi (@amiremohamadi)
- * DuckX is a free library to work wirh docx files.
+ * DuckX is a free library to work with docx files.
 */
 
 #ifndef DUCKX_H
@@ -15,7 +15,7 @@
 #include "zip.h"
 
 
-// TODO: Use conatiner-iterator design pattern!
+// TODO: Use container-iterator design pattern!
 
 namespace duckx {
     // Run contains runs in a paragraph
@@ -123,7 +123,7 @@ namespace duckx {
 		TableRow& rows();
 	};
 
-    // Document conatins whole the docx file
+    // Document contains whole the docx file
     // and stores paragraphs
     class Document {
     private:
