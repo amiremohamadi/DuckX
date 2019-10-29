@@ -32,12 +32,12 @@ namespace duckx {
         void set_parent(pugi::xml_node);
         void set_current(pugi::xml_node);
 
-        std::string get_text();
-        bool set_text(std::string);
-        bool set_text(const char *);
+        std::string get_text() const;
+        bool set_text(const std::string&) const;
+        bool set_text(const char *) const;
 
         Run &next();
-        bool has_next();
+        bool has_next() const;
     };
 
     // Paragraph contains a paragraph
@@ -58,12 +58,12 @@ namespace duckx {
         void set_current(pugi::xml_node);
 
         Paragraph &next();
-        bool has_next();
+        bool has_next() const;
 
         Run &runs();
-        Run &add_run(std::string);
+        Run &add_run(const std::string&);
         Run &add_run(const char*);
-        Paragraph &insert_paragraph_after(std::string);
+        Paragraph &insert_paragraph_after(const std::string&);
     };
 
 	// TableCell contains one or more paragraphs
@@ -83,7 +83,7 @@ namespace duckx {
 		Paragraph& paragraphs();
 
 		TableCell& next();
-		bool has_next();
+		bool has_next() const;
 	};
 
 	// TableRow consists of one or more TableCells
@@ -100,7 +100,7 @@ namespace duckx {
 
 		TableCell& cells();
 
-		bool has_next();
+		bool has_next() const;
 		TableRow& next();
 	};
 
@@ -118,7 +118,7 @@ namespace duckx {
 		void set_current(pugi::xml_node);
 
 		Table& next();
-		bool has_next();
+		bool has_next() const;
 
 		TableRow& rows();
 	};
@@ -137,7 +137,7 @@ namespace duckx {
         Document(std::string);
         void file(std::string);
         void open();
-        void save();
+        void save() const;
 
         Paragraph &paragraphs();
 		Table& tables();

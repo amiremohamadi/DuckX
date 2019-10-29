@@ -29,15 +29,15 @@ void duckx::Run::set_current(pugi::xml_node node) {
 }
 
 
-std::string duckx::Run::get_text() {
+std::string duckx::Run::get_text() const {
     return this->current.child("w:t").text().get();
 }
 
-bool duckx::Run::set_text(std::string text) {
+bool duckx::Run::set_text(const std::string& text) const {
     return this->current.child("w:t").text().set(text.c_str());
 }
 
-bool duckx::Run::set_text(const char *text) {
+bool duckx::Run::set_text(const char *text) const {
     return this->current.child("w:t").text().set(text);
 }
 
@@ -46,7 +46,7 @@ duckx::Run& duckx::Run::next() {
     return *this;
 }
 
-bool duckx::Run::has_next() {
+bool duckx::Run::has_next() const {
     return this->current != 0;
 }
 
@@ -71,7 +71,7 @@ void duckx::TableCell::set_current(pugi::xml_node node) {
 	this->current = node;
 }
 
-bool duckx::TableCell::has_next() {
+bool duckx::TableCell::has_next() const {
 	return this->current != 0;
 }
 
@@ -120,7 +120,7 @@ duckx::TableCell& duckx::TableRow::cells() {
 	return this->cell;
 }
 
-bool duckx::TableRow::has_next() {
+bool duckx::TableRow::has_next() const {
 	return this->current != 0;
 }
 
@@ -141,7 +141,7 @@ void duckx::Table::set_parent(pugi::xml_node node) {
 	);
 }
 
-bool duckx::Table::has_next() {
+bool duckx::Table::has_next() const {
 	return this->current != 0;
 }
 
@@ -188,7 +188,7 @@ duckx::Paragraph &duckx::Paragraph::next() {
     return *this;
 }
 
-bool duckx::Paragraph::has_next() {
+bool duckx::Paragraph::has_next() const {
     return this->current != 0;
 }
 
@@ -199,7 +199,7 @@ duckx::Run &duckx::Paragraph::runs() {
     return this->run;
 }
 
-duckx::Run &duckx::Paragraph::add_run(std::string text) {
+duckx::Run &duckx::Paragraph::add_run(const std::string& text) {
     return this->add_run(text.c_str());
 }
 
@@ -214,7 +214,7 @@ duckx::Run &duckx::Paragraph::add_run(const char *text) {
     return *new Run(this->current, new_run);
 }
 
-duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(std::string text) {
+duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text) {
     pugi::xml_node new_para = this->parent.insert_child_after("w:p", this->current);
     
     Paragraph *p = new Paragraph();
@@ -263,7 +263,7 @@ void duckx::Document::open() {
     );
 }
 
-void duckx::Document::save() {
+void duckx::Document::save() const {
 	// minizip only supports appending or writing to new files
 	// so we must
 	// - make a new file
