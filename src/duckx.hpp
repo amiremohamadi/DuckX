@@ -18,8 +18,6 @@
 // TODO: Use container-iterator design pattern!
 
 namespace duckx {
-	template<typename T>
-	class Iterator;
     // Run contains runs in a paragraph
     class Run {
     private:
