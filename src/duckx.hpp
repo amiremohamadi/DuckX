@@ -52,6 +52,22 @@ namespace duckx {
             Shadow        = 1 << 7
         };
     };
+    
+    inline duckx::Run::FormattingFlags operator|(duckx::Run::FormattingFlags a, duckx::Run::FormattingFlags b) {
+        return a = static_cast<duckx::Run::FormattingFlags>(static_cast<int>(a) | static_cast<int>(b));
+    }
+    
+    inline duckx::Run::FormattingFlags operator&(duckx::Run::FormattingFlags a, duckx::Run::FormattingFlags b) {
+        return a = static_cast<duckx::Run::FormattingFlags>(static_cast<int>(a) & static_cast<int>(b));
+    }
+    
+    inline duckx::Run::FormattingFlags& operator|=(duckx::Run::FormattingFlags& a, duckx::Run::FormattingFlags b) {
+        return a = static_cast<duckx::Run::FormattingFlags>(static_cast<int>(a) | static_cast<int>(b));
+    }
+    
+    inline duckx::Run::FormattingFlags& operator&=(duckx::Run::FormattingFlags& a, duckx::Run::FormattingFlags b) {
+        return a = static_cast<duckx::Run::FormattingFlags>(static_cast<int>(a) & static_cast<int>(b));
+    }
 
     // Paragraph contains a paragraph
     // and stores runs
@@ -75,9 +91,9 @@ namespace duckx {
         bool has_next() const;
 
         Run &runs();
-        Run &add_run(const std::string&, int formattingFlags = Run::None);
-        Run &add_run(const char*, int formattingFlags = Run::None);
-        Paragraph &insert_paragraph_after(const std::string&, int formatting = Run::None);
+        Run &add_run(const std::string&, Run::FormattingFlags = Run::None);
+        Run &add_run(const char*, Run::FormattingFlags = Run::None);
+        Paragraph &insert_paragraph_after(const std::string&, Run::FormattingFlags = Run::None);
     };
 
 	// TableCell contains one or more paragraphs
