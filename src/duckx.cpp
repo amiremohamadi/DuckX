@@ -199,27 +199,37 @@ duckx::Run &duckx::Paragraph::runs() {
     return this->run;
 }
 
-duckx::Run &duckx::Paragraph::add_run(const std::string& text) {
-    return this->add_run(text.c_str());
+duckx::Run &duckx::Paragraph::add_run(const std::string& text, int formattingFlags) {
+    return this->add_run(text.c_str(),formattingFlags);
 }
 
-duckx::Run &duckx::Paragraph::add_run(const char *text) {
+duckx::Run &duckx::Paragraph::add_run(const char *text, int formattingFlags) {
     // Add new run
     pugi::xml_node new_run = this->current.append_child("w:r");
     // Insert meta to new run
-    new_run.append_child("w:rPr");
+    pugi::xml_node meta = new_run.append_child("w:rPr");
+    if(formattingFlags & Run::Bold) meta.append_child("w:b");
+    if(formattingFlags & Run::Italic) meta.append_child("w:i");
+    if(formattingFlags & Run::Underline) meta.append_child("w:u").append_attribute("w:val").set_value("single");
+    if(formattingFlags & Run::Strikethrough) meta.append_child("w:strike").append_attribute("w:val").set_value("true");
+    if(formattingFlags & Run::Superscript) meta.append_child("w:vertAlign").append_attribute("w:val").set_value("superscript");
+    else if(formattingFlags & Run::Subscript) meta.append_child("w:vertAlign").append_attribute("w:val").set_value("subscript");
+    if(formattingFlags & Run::SmallCaps) meta.append_child("w:smallCaps").append_attribute("w:val").set_value("true");
+    if(formattingFlags & Run::Shadow) meta.append_child("w:shadow").append_attribute("w:val").set_value("true");
+    
+
     pugi::xml_node new_run_text = new_run.append_child("w:t");
     new_run_text.text().set(text);
 
     return *new Run(this->current, new_run);
 }
 
-duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text) {
+duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text, int formatting) {
     pugi::xml_node new_para = this->parent.insert_child_after("w:p", this->current);
     
     Paragraph *p = new Paragraph();
     p->set_current(new_para);
-    p->add_run(text);
+    p->add_run(text, formatting);
 
     return *p;
 }
