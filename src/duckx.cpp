@@ -211,7 +211,7 @@ duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f
     // Insert meta to new run
     pugi::xml_node meta = new_run.append_child("w:rPr");
 
-    if(f & duckx::bold)
+    	if(f & duckx::bold)
 		meta.append_child("w:b");
     
 	if(f & duckx::italic)
@@ -225,7 +225,7 @@ duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f
     
 	if(f & duckx::superscript)
 		meta.append_child("w:vertAlign").append_attribute("w:val").set_value("superscript");
-    else if(f & duckx::subscript)
+    	else if(f & duckx::subscript)
 		meta.append_child("w:vertAlign").append_attribute("w:val").set_value("subscript");
     
 	if(f & duckx::smallcaps)
