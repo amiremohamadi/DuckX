@@ -211,28 +211,28 @@ duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f
     // Insert meta to new run
     pugi::xml_node meta = new_run.append_child("w:rPr");
 
-    	if(f & duckx::bold)
-		meta.append_child("w:b");
+    if(f & duckx::bold)
+        meta.append_child("w:b");
     
-	if(f & duckx::italic)
-		meta.append_child("w:i");
+    if(f & duckx::italic)
+        meta.append_child("w:i");
     
-	if(f & duckx::underline)
-		meta.append_child("w:u").append_attribute("w:val").set_value("single");
+    if(f & duckx::underline)
+        meta.append_child("w:u").append_attribute("w:val").set_value("single");
     
-	if(f & duckx::strikethrough)
-		meta.append_child("w:strike").append_attribute("w:val").set_value("true");
+    if(f & duckx::strikethrough)
+        meta.append_child("w:strike").append_attribute("w:val").set_value("true");
     
-	if(f & duckx::superscript)
-		meta.append_child("w:vertAlign").append_attribute("w:val").set_value("superscript");
-    	else if(f & duckx::subscript)
-		meta.append_child("w:vertAlign").append_attribute("w:val").set_value("subscript");
+    if(f & duckx::superscript)
+        meta.append_child("w:vertAlign").append_attribute("w:val").set_value("superscript");
+    else if(f & duckx::subscript)
+        meta.append_child("w:vertAlign").append_attribute("w:val").set_value("subscript");
     
-	if(f & duckx::smallcaps)
-		meta.append_child("w:smallCaps").append_attribute("w:val").set_value("true");
+    if(f & duckx::smallcaps)
+        meta.append_child("w:smallCaps").append_attribute("w:val").set_value("true");
     
-	if(f & duckx::shadow)
-		meta.append_child("w:shadow").append_attribute("w:val").set_value("true");
+    if(f & duckx::shadow)
+        meta.append_child("w:shadow").append_attribute("w:val").set_value("true");
 
     pugi::xml_node new_run_text = new_run.append_child("w:t");
     //If the run starts or ends with whitespace characters, preserve them using the xml:space attribute
