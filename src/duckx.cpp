@@ -1,5 +1,7 @@
 #include "duckx.hpp"
 
+#include <ctype.h>
+
 // Hack on pugixml
 // We need to write xml to std string (or char *)
 // So overload the write function
@@ -199,27 +201,40 @@ duckx::Run &duckx::Paragraph::runs() {
     return this->run;
 }
 
-duckx::Run &duckx::Paragraph::add_run(const std::string& text) {
-    return this->add_run(text.c_str());
+duckx::Run &duckx::Paragraph::add_run(const std::string& text, duckx::Run::FormattingFlags f) {
+    return this->add_run(text.c_str(),f);
 }
 
-duckx::Run &duckx::Paragraph::add_run(const char *text) {
+duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::Run::FormattingFlags f) {
     // Add new run
     pugi::xml_node new_run = this->current.append_child("w:r");
     // Insert meta to new run
-    new_run.append_child("w:rPr");
+    pugi::xml_node meta = new_run.append_child("w:rPr");
+    if(f & Run::Bold) meta.append_child("w:b");
+    if(f & Run::Italic) meta.append_child("w:i");
+    if(f & Run::Underline) meta.append_child("w:u").append_attribute("w:val").set_value("single");
+    if(f & Run::Strikethrough) meta.append_child("w:strike").append_attribute("w:val").set_value("true");
+    if(f & Run::Superscript) meta.append_child("w:vertAlign").append_attribute("w:val").set_value("superscript");
+    else if(f & Run::Subscript) meta.append_child("w:vertAlign").append_attribute("w:val").set_value("subscript");
+    if(f & Run::SmallCaps) meta.append_child("w:smallCaps").append_attribute("w:val").set_value("true");
+    if(f & Run::Shadow) meta.append_child("w:shadow").append_attribute("w:val").set_value("true");
+    
+
     pugi::xml_node new_run_text = new_run.append_child("w:t");
+    //If the run starts or ends with whitespace characters, preserve them using the xml:space attribute
+    if(*text != 0 && (isspace(text[0]) || isspace(text[strlen(text)-1])))
+        new_run_text.append_attribute("xml:space").set_value("preserve");
     new_run_text.text().set(text);
 
     return *new Run(this->current, new_run);
 }
 
-duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text) {
+duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text, duckx::Run::FormattingFlags f) {
     pugi::xml_node new_para = this->parent.insert_child_after("w:p", this->current);
     
     Paragraph *p = new Paragraph();
     p->set_current(new_para);
-    p->add_run(text);
+    p->add_run(text, f);
 
     return *p;
 }

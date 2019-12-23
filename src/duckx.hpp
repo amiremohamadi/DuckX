@@ -39,7 +39,35 @@ namespace duckx {
 
         Run &next();
         bool has_next() const;
+
+        enum FormattingFlags {
+            None          = 0,
+            Bold          = 1 << 0,
+            Italic        = 1 << 1,
+            Underline     = 1 << 2,
+            Strikethrough = 1 << 3,
+            Superscript   = 1 << 4,
+            Subscript     = 1 << 5,
+            SmallCaps     = 1 << 6,
+            Shadow        = 1 << 7
+        };
     };
+    
+    inline duckx::Run::FormattingFlags operator|(duckx::Run::FormattingFlags a, duckx::Run::FormattingFlags b) {
+        return a = static_cast<duckx::Run::FormattingFlags>(static_cast<int>(a) | static_cast<int>(b));
+    }
+    
+    inline duckx::Run::FormattingFlags operator&(duckx::Run::FormattingFlags a, duckx::Run::FormattingFlags b) {
+        return a = static_cast<duckx::Run::FormattingFlags>(static_cast<int>(a) & static_cast<int>(b));
+    }
+    
+    inline duckx::Run::FormattingFlags& operator|=(duckx::Run::FormattingFlags& a, duckx::Run::FormattingFlags b) {
+        return a = static_cast<duckx::Run::FormattingFlags>(static_cast<int>(a) | static_cast<int>(b));
+    }
+    
+    inline duckx::Run::FormattingFlags& operator&=(duckx::Run::FormattingFlags& a, duckx::Run::FormattingFlags b) {
+        return a = static_cast<duckx::Run::FormattingFlags>(static_cast<int>(a) & static_cast<int>(b));
+    }
 
     // Paragraph contains a paragraph
     // and stores runs
@@ -63,9 +91,9 @@ namespace duckx {
         bool has_next() const;
 
         Run &runs();
-        Run &add_run(const std::string&);
-        Run &add_run(const char*);
-        Paragraph &insert_paragraph_after(const std::string&);
+        Run &add_run(const std::string&, Run::FormattingFlags = Run::None);
+        Run &add_run(const char*, Run::FormattingFlags = Run::None);
+        Paragraph &insert_paragraph_after(const std::string&, Run::FormattingFlags = Run::None);
     };
 
 	// TableCell contains one or more paragraphs
