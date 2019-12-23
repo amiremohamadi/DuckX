@@ -1,6 +1,6 @@
 #include "duckx.hpp"
 
-#include <ctype.h>
+#include <cctype>
 
 // Hack on pugixml
 // We need to write xml to std string (or char *)
@@ -201,24 +201,38 @@ duckx::Run &duckx::Paragraph::runs() {
     return this->run;
 }
 
-duckx::Run &duckx::Paragraph::add_run(const std::string& text, duckx::Run::FormattingFlags f) {
+duckx::Run &duckx::Paragraph::add_run(const std::string& text, duckx::formatting_flag f) {
     return this->add_run(text.c_str(),f);
 }
 
-duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::Run::FormattingFlags f) {
+duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f) {
     // Add new run
     pugi::xml_node new_run = this->current.append_child("w:r");
     // Insert meta to new run
     pugi::xml_node meta = new_run.append_child("w:rPr");
-    if(f & Run::Bold) meta.append_child("w:b");
-    if(f & Run::Italic) meta.append_child("w:i");
-    if(f & Run::Underline) meta.append_child("w:u").append_attribute("w:val").set_value("single");
-    if(f & Run::Strikethrough) meta.append_child("w:strike").append_attribute("w:val").set_value("true");
-    if(f & Run::Superscript) meta.append_child("w:vertAlign").append_attribute("w:val").set_value("superscript");
-    else if(f & Run::Subscript) meta.append_child("w:vertAlign").append_attribute("w:val").set_value("subscript");
-    if(f & Run::SmallCaps) meta.append_child("w:smallCaps").append_attribute("w:val").set_value("true");
-    if(f & Run::Shadow) meta.append_child("w:shadow").append_attribute("w:val").set_value("true");
+
+    if(f & duckx::bold)
+		meta.append_child("w:b");
     
+	if(f & duckx::italic)
+		meta.append_child("w:i");
+    
+	if(f & duckx::underline)
+		meta.append_child("w:u").append_attribute("w:val").set_value("single");
+    
+	if(f & duckx::strikethrough)
+		meta.append_child("w:strike").append_attribute("w:val").set_value("true");
+    
+	if(f & duckx::superscript)
+		meta.append_child("w:vertAlign").append_attribute("w:val").set_value("superscript");
+    else if(f & duckx::subscript)
+		meta.append_child("w:vertAlign").append_attribute("w:val").set_value("subscript");
+    
+	if(f & duckx::smallcaps)
+		meta.append_child("w:smallCaps").append_attribute("w:val").set_value("true");
+    
+	if(f & duckx::shadow)
+		meta.append_child("w:shadow").append_attribute("w:val").set_value("true");
 
     pugi::xml_node new_run_text = new_run.append_child("w:t");
     //If the run starts or ends with whitespace characters, preserve them using the xml:space attribute
@@ -229,7 +243,7 @@ duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::Run::FormattingFl
     return *new Run(this->current, new_run);
 }
 
-duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text, duckx::Run::FormattingFlags f) {
+duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text, duckx::formatting_flag f) {
     pugi::xml_node new_para = this->parent.insert_child_after("w:p", this->current);
     
     Paragraph *p = new Paragraph();
