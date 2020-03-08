@@ -243,6 +243,12 @@ duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f
     return *new Run(this->current, new_run);
 }
 
+void duckx::Paragraph::add_newline() {
+    // Add new run
+    pugi::xml_node new_run = this->current.append_child("w:r");
+    this->current.append_child("w:br");
+}
+
 duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text, duckx::formatting_flag f) {
     pugi::xml_node new_para = this->parent.insert_child_after("w:p", this->current);
     

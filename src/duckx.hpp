@@ -66,6 +66,7 @@ namespace duckx {
         Run &runs();
         Run &add_run(const std::string&, duckx::formatting_flag = duckx::none);
         Run &add_run(const char*, duckx::formatting_flag = duckx::none);
+        void add_newline();
         Paragraph &insert_paragraph_after(const std::string&, duckx::formatting_flag = duckx::none);
     };
 
