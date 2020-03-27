@@ -43,6 +43,11 @@ bool duckx::Run::set_text(const char *text) const {
     return this->current.child("w:t").text().set(text);
 }
 
+duckx::Run& duckx::Run::add_tab() {
+    this->current.append_child("w:tab");
+    return *this;
+}
+
 duckx::Run& duckx::Run::next() {
     this->current = this->current.next_sibling();
     return *this;
@@ -239,6 +244,18 @@ duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f
     if(*text != 0 && (isspace(text[0]) || isspace(text[strlen(text)-1])))
         new_run_text.append_attribute("xml:space").set_value("preserve");
     new_run_text.text().set(text);
+
+    return *new Run(this->current, new_run);
+}
+
+duckx::Run &duckx::Paragraph::add_run(Break break_type) {
+    pugi::xml_node new_run = this->current.append_child("w:r");
+    pugi::xml_node break_node = this->current.append_child("w:br");
+
+    if (break_type == Break::Page)
+        break_node.append_attribute("w:type").set_value("page");
+    else if (break_type == Break::Column)
+        break_node.append_attribute("w:type").set_value("column");
 
     return *new Run(this->current, new_run);
 }

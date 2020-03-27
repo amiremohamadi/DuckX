@@ -37,6 +37,7 @@ namespace duckx {
         std::string get_text() const;
         bool set_text(const std::string&) const;
         bool set_text(const char *) const;
+        Run& add_tab();
 
         Run &next();
         bool has_next() const;
@@ -66,6 +67,8 @@ namespace duckx {
         Run &runs();
         Run &add_run(const std::string&, duckx::formatting_flag = duckx::none);
         Run &add_run(const char*, duckx::formatting_flag = duckx::none);
+        Run &add_run(Break break_type);
+
         Paragraph &insert_paragraph_after(const std::string&, duckx::formatting_flag = duckx::none);
     };
 
