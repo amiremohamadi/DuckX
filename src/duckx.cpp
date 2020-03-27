@@ -43,6 +43,11 @@ bool duckx::Run::set_text(const char *text) const {
     return this->current.child("w:t").text().set(text);
 }
 
+duckx::Run& duckx::Run::add_tab() {
+    this->current.append_child("w:tab");
+    return *this;
+}
+
 duckx::Run& duckx::Run::next() {
     this->current = this->current.next_sibling();
     return *this;

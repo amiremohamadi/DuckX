@@ -37,6 +37,7 @@ namespace duckx {
         std::string get_text() const;
         bool set_text(const std::string&) const;
         bool set_text(const char *) const;
+        Run& add_tab();
 
         Run &next();
         bool has_next() const;
