@@ -243,10 +243,16 @@ duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f
     return *new Run(this->current, new_run);
 }
 
-void duckx::Paragraph::add_newline() {
-    // Add new run
+duckx::Run &duckx::Paragraph::add_run(Break break_type) {
     pugi::xml_node new_run = this->current.append_child("w:r");
-    this->current.append_child("w:br");
+    pugi::xml_node break_node = this->current.append_child("w:br");
+
+    if (break_type == Break::Page)
+        break_node.append_attribute("w:type").set_value("page");
+    else if (break_type == Break::Column)
+        break_node.append_attribute("w:type").set_value("column");
+
+    return *new Run(this->current, new_run);
 }
 
 duckx::Paragraph &duckx::Paragraph::insert_paragraph_after(const std::string& text, duckx::formatting_flag f) {

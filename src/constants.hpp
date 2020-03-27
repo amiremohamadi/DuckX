@@ -2,6 +2,14 @@
 #define CONSTANTS_HPP
 
 namespace duckx {
+    // Break constants.
+    // https://docs.microsoft.com/en-us/dotnet/api/microsoft.office.interop.word.wdbreaktype
+    enum class Break {
+        Line = 6,
+        Page = 7,
+        Column = 8,
+    };
+
     typedef unsigned const int formatting_flag;
 
     // text-formatting flags
