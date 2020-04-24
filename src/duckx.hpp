@@ -147,6 +147,7 @@ class Document {
     Document(std::string);
     void file(std::string);
     void open();
+    void save_as(const std::string &path) const;
     void save() const;
 
     Paragraph &paragraphs();

@@ -269,7 +269,7 @@ void duckx::Document::open() {
     this->paragraph.set_parent(document.child("w:document").child("w:body"));
 }
 
-void duckx::Document::save() const {
+void duckx::Document::save_as(const std::string &temp_file) const {
     // minizip only supports appending or writing to new files
     // so we must
     // - make a new file
@@ -280,8 +280,7 @@ void duckx::Document::save() const {
 
     // Open file and replace "xml" content
 
-    std::string original_file = this->directory;
-    std::string temp_file = this->directory + ".tmp";
+    const std::string &original_file = this->directory;
 
     // Create the new file
     zip_t *new_zip =
@@ -292,27 +291,28 @@ void duckx::Document::save() const {
     xml_string_writer writer;
     this->document.print(writer);
 
-    const char *buf = writer.result.c_str();
-    zip_entry_write(new_zip, buf, strlen(buf));
+    auto buf = writer.result;
+    zip_entry_write(new_zip, buf.data(), buf.size());
     zip_entry_close(new_zip);
 
     // Open the original zip and copy all files which are not replaced by duckX
     zip_t *orig_zip =
         zip_open(original_file.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
+
     // Loop & copy each relevant entry in the original zip
-    int orig_zip_entry_ct = zip_total_entries(orig_zip);
-    for (int i = 0; i < orig_zip_entry_ct; i++) {
+    for (int i = 0; i < zip_total_entries(orig_zip); ++i) {
         zip_entry_openbyindex(orig_zip, i);
-        const char *name = zip_entry_name(orig_zip);
+        const std::string name = zip_entry_name(orig_zip);
+
         // Skip copying the original file
-        if (std::string(name) != std::string("word/document.xml")) {
+        if (name != "word/document.xml") {
             // Read the old content
             void *entry_buf;
             size_t entry_buf_size;
             zip_entry_read(orig_zip, &entry_buf, &entry_buf_size);
 
             // Write into new zip
-            zip_entry_open(new_zip, name);
+            zip_entry_open(new_zip, name.c_str());
             zip_entry_write(new_zip, entry_buf, entry_buf_size);
             zip_entry_close(new_zip);
 
@@ -325,10 +325,17 @@ void duckx::Document::save() const {
     // Close both zips
     zip_close(orig_zip);
     zip_close(new_zip);
+}
+
+void duckx::Document::save() const {
+
+    auto temp_file = this->directory + ".tmp";
+
+    save_as(temp_file);
 
     // Remove original zip, rename new to correct name
-    remove(original_file.c_str());
-    rename(temp_file.c_str(), original_file.c_str());
+    remove(this->directory.c_str());
+    rename(temp_file.c_str(), this->directory.c_str());
 }
 
 duckx::Paragraph &duckx::Document::paragraphs() {
