@@ -32,3 +32,4 @@
 *.app
 *.user
 .DS_Store
+build/*

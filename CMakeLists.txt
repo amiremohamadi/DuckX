@@ -9,14 +9,19 @@ endif()
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_SAMPLES "Build provided samples" OFF)
 
-set(HEADERS src/duckx.hpp src/zip.h src/miniz.h
-     src/pugixml.hpp src/pugiconfig.hpp src/duckxiterator.hpp src/constants.hpp)
-set(SOURCES src/duckx.cpp src/zip.c src/pugixml.cpp)
+
+include_directories("${CMAKE_SOURCE_DIR}/include"
+                    "${CMAKE_SOURCE_DIR}/thirdparty/pugixml"
+                    "${CMAKE_SOURCE_DIR}/thirdparty/zip")
+
+set(SOURCES src/duckx.cpp)
+set(THIRD_PARTY_SRC "${CMAKE_SOURCE_DIR}/thirdparty/pugixml/pugixml.cpp"
+                    "${CMAKE_SOURCE_DIR}/thirdparty/zip/zip.c")
 
 if(BUILD_SHARED_LIBS)
-    add_library(duckx SHARED ${HEADERS} ${SOURCES})
+    add_library(duckx SHARED ${SOURCES} ${THIRD_PARTY_SRC})
 else()
-    add_library(duckx STATIC ${HEADERS} ${SOURCES})
+    add_library(duckx STATIC ${SOURCES} ${THIRD_PARTY_SRC})
 endif()
 
 add_library(duckx::duckx ALIAS duckx)
