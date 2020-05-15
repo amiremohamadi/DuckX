@@ -1,5 +1,5 @@
+#include <duckx.hpp>
 #include <iostream>
-#include "../src/duckx.hpp"
 using namespace std;
 
 int main() {
