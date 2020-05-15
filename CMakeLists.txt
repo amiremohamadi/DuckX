@@ -10,13 +10,19 @@ option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_SAMPLES "Build provided samples" OFF)
 
 
+set(HEADERS "${CMAKE_SOURCE_DIR}/include/duckx.hpp"
+            "${CMAKE_SOURCE_DIR}/include/constants.hpp"
+            "${CMAKE_SOURCE_DIR}/include/duckxiterator.hpp")
+set(SOURCES src/duckx.cpp)
+
+set(THIRD_PARTY_HEADERS "${CMAKE_SOURCE_DIR}/thirdparty/pugixml/pugixml.hpp"
+                        "${CMAKE_SOURCE_DIR}/thirdparty/zip/zip.h")
+set(THIRD_PARTY_SRC "${CMAKE_SOURCE_DIR}/thirdparty/pugixml/pugixml.cpp"
+                    "${CMAKE_SOURCE_DIR}/thirdparty/zip/zip.c")
+
 include_directories("${CMAKE_SOURCE_DIR}/include"
                     "${CMAKE_SOURCE_DIR}/thirdparty/pugixml"
                     "${CMAKE_SOURCE_DIR}/thirdparty/zip")
-
-set(SOURCES src/duckx.cpp)
-set(THIRD_PARTY_SRC "${CMAKE_SOURCE_DIR}/thirdparty/pugixml/pugixml.cpp"
-                    "${CMAKE_SOURCE_DIR}/thirdparty/zip/zip.c")
 
 if(BUILD_SHARED_LIBS)
     add_library(duckx SHARED ${SOURCES} ${THIRD_PARTY_SRC})
@@ -56,7 +62,7 @@ install(
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 install(EXPORT duckxConfig NAMESPACE duckx:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/duckx)
-install(FILES ${HEADERS} DESTINATION include)
+install(FILES ${HEADERS} ${THIRD_PARTY_HEADERS} DESTINATION include/duckx)
 
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
