@@ -33,3 +33,6 @@
 *.user
 .DS_Store
 build/*
+
+# vim swap files
+**/*.swp
