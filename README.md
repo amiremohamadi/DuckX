@@ -1,6 +1,10 @@
 <p align="center"><img src="https://github.com/amiremohamadi/DuckX/blob/master/img/logo.png" width="380"></p>
 
 [![Build Status](https://travis-ci.com/amiremohamadi/DuckX.svg?branch=master)](https://travis-ci.com/amiremohamadi/DuckX)
+[![GitHub license](https://img.shields.io/github/license/amiremohamadi/duckx)](https://github.com/amiremohamadi/duckx/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/amiremohamadi/duckx)](https://github.com/amiremohamadi/DuckX/releases)
+[![Twitter follow](https://img.shields.io/twitter/follow/amiremohamadi?style=social)](https://twitter.com/amiremohamadi)
+
 
 # DuckX
 
