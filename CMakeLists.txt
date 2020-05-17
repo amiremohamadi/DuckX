@@ -18,8 +18,7 @@ set(SOURCES src/duckx.cpp)
 set(THIRD_PARTY_HEADERS "${CMAKE_SOURCE_DIR}/thirdparty/pugixml/pugixml.hpp"
                         "${CMAKE_SOURCE_DIR}/thirdparty/pugixml/pugiconfig.hpp"
                         "${CMAKE_SOURCE_DIR}/thirdparty/zip/zip.h")
-set(THIRD_PARTY_SRC "${CMAKE_SOURCE_DIR}/thirdparty/pugixml/pugixml.cpp"
-                    "${CMAKE_SOURCE_DIR}/thirdparty/zip/zip.c")
+set(THIRD_PARTY_SRC "${CMAKE_SOURCE_DIR}/thirdparty/zip/zip.c")
 
 include_directories("${CMAKE_SOURCE_DIR}/include"
                     "${CMAKE_SOURCE_DIR}/thirdparty/pugixml"
