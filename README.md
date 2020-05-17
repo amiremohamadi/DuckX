@@ -18,7 +18,7 @@
 Here's an example of how to use duckx to read a docx file; It opens a docx file named **file.docx** and goes over paragraphs and runs and prints them:
 ```c++
 #include <iostream>
-#include <duckx.hpp>
+#include <duckx/duckx.hpp>
 
 int main() {
 
@@ -26,11 +26,9 @@ int main() {
 
     doc.open();
 
-    for (auto p : doc.paragraphs()) {
-	    for (auto r : p.runs()) {
+    for (auto p : doc.paragraphs())
+	for (auto r : p.runs())
             std::cout << r.get_text() << std::endl;
-        }
-    }
 }
 ```
 
