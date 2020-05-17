@@ -8,18 +8,19 @@
 
 # DuckX
 
-**DuckX** is a library for creation of Office docx files
+create, read and write Microsoft Office Word docx files
 
-> DuckX helps you to work with docx files quickly in C++.
+> DuckX was created when I was looking for a C++ library which can properly parse MS Word .docx files, but couldn't find any
 
 ## Status ##
 
 - Documents (docx) [Word]
 	- Read/Write/Edit
+	- Change document properties
 
 ## Quick Start
 
-Here's an example of how to use duckx to read a docx file; It opens a docx file named **file.docx** and goes over paragraphs and runs and prints them:
+Here's an example of how to use duckx to read a docx file; It opens a docx file named **file.docx** and goes over paragraphs and runs to print them:
 ```c++
 #include <iostream>
 #include <duckx/duckx.hpp>
@@ -36,9 +37,9 @@ int main() {
 }
 ```
 
-**Note** that you must use -lduckx flag to compile your cpp file
 <br/>
-For example:
+And compile your file like this:
+
 ```bash
 g++ sample1.cpp -lduckx
 ```
@@ -48,7 +49,7 @@ g++ sample1.cpp -lduckx
 
 ## Install ##
 
-It's easy as pie!
+Easy as pie!
 
 #### Compiling
 
