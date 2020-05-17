@@ -22,21 +22,21 @@ duckx::Run::Run(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::Run::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child(L"w:r");
+    this->current = this->parent.child("w:r");
 }
 
 void duckx::Run::set_current(pugi::xml_node node) { this->current = node; }
 
 std::string duckx::Run::get_text() const {
-    return pugi::as_utf8(this->current.child(L"w:t").text().get());
+    return this->current.child("w:t").text().get();
 }
 
 bool duckx::Run::set_text(const std::string &text) const {
-    return this->current.child(L"w:t").text().set(text.c_str());
+    return this->current.child("w:t").text().set(text.c_str());
 }
 
 bool duckx::Run::set_text(const char *text) const {
-    return this->current.child(L"w:t").text().set(text);
+    return this->current.child("w:t").text().set(text);
 }
 
 duckx::Run &duckx::Run::next() {
@@ -56,7 +56,7 @@ duckx::TableCell::TableCell(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::TableCell::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child(L"w:tc");
+    this->current = this->parent.child("w:tc");
 
     this->paragraph.set_parent(this->current);
 }
@@ -87,7 +87,7 @@ duckx::TableRow::TableRow(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::TableRow::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child(L"w:tr");
+    this->current = this->parent.child("w:tr");
 
     this->cell.set_parent(this->current);
 }
@@ -116,7 +116,7 @@ duckx::Table::Table(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::Table::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child(L"w:tbl");
+    this->current = this->parent.child("w:tbl");
 
     this->row.set_parent(this->current);
 }
@@ -145,7 +145,7 @@ duckx::Paragraph::Paragraph(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::Paragraph::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child(L"w:p");
+    this->current = this->parent.child("w:p");
 
     this->run.set_parent(this->current);
 }
@@ -175,49 +175,48 @@ duckx::Run &duckx::Paragraph::add_run(const std::string &text,
 duckx::Run &duckx::Paragraph::add_run(const char *text,
                                       duckx::formatting_flag f) {
     // Add new run
-    pugi::xml_node new_run = this->current.append_child(L"w:r");
+    pugi::xml_node new_run = this->current.append_child("w:r");
     // Insert meta to new run
-    pugi::xml_node meta = new_run.append_child(L"w:rPr");
+    pugi::xml_node meta = new_run.append_child("w:rPr");
 
     if (f & duckx::bold)
-        meta.append_child(L"w:b");
+        meta.append_child("w:b");
 
     if (f & duckx::italic)
-        meta.append_child(L"w:i");
+        meta.append_child("w:i");
 
     if (f & duckx::underline)
-        meta.append_child(L"w:u").append_attribute(L"w:val").set_value(
-            "single");
+        meta.append_child("w:u").append_attribute("w:val").set_value("single");
 
     if (f & duckx::strikethrough)
-        meta.append_child(L"w:strike")
-            .append_attribute(L"w:val")
+        meta.append_child("w:strike")
+            .append_attribute("w:val")
             .set_value("true");
 
     if (f & duckx::superscript)
-        meta.append_child(L"w:vertAlign")
-            .append_attribute(L"w:val")
+        meta.append_child("w:vertAlign")
+            .append_attribute("w:val")
             .set_value("superscript");
     else if (f & duckx::subscript)
-        meta.append_child(L"w:vertAlign")
-            .append_attribute(L"w:val")
+        meta.append_child("w:vertAlign")
+            .append_attribute("w:val")
             .set_value("subscript");
 
     if (f & duckx::smallcaps)
-        meta.append_child(L"w:smallCaps")
-            .append_attribute(L"w:val")
+        meta.append_child("w:smallCaps")
+            .append_attribute("w:val")
             .set_value("true");
 
     if (f & duckx::shadow)
-        meta.append_child(L"w:shadow")
-            .append_attribute(L"w:val")
+        meta.append_child("w:shadow")
+            .append_attribute("w:val")
             .set_value("true");
 
-    pugi::xml_node new_run_text = new_run.append_child(L"w:t");
+    pugi::xml_node new_run_text = new_run.append_child("w:t");
     // If the run starts or ends with whitespace characters, preserve them using
     // the xml:space attribute
     if (*text != 0 && (isspace(text[0]) || isspace(text[strlen(text) - 1])))
-        new_run_text.append_attribute(L"xml:space").set_value("preserve");
+        new_run_text.append_attribute("xml:space").set_value("preserve");
     new_run_text.text().set(text);
 
     return *new Run(this->current, new_run);
@@ -227,7 +226,7 @@ duckx::Paragraph &
 duckx::Paragraph::insert_paragraph_after(const std::string &text,
                                          duckx::formatting_flag f) {
     pugi::xml_node new_para =
-        this->parent.insert_child_after(L"w:p", this->current);
+        this->parent.insert_child_after("w:p", this->current);
 
     Paragraph *p = new Paragraph();
     p->set_current(new_para);
@@ -263,11 +262,11 @@ void duckx::Document::open() {
     zip_entry_close(zip);
     zip_close(zip);
 
-    this->document.load_buffer_inplace(buf, bufsize);
+    this->document.load_buffer(buf, bufsize);
 
     free(buf);
 
-    this->paragraph.set_parent(document.child(L"w:document").child(L"w:body"));
+    this->paragraph.set_parent(document.child("w:document").child("w:body"));
 }
 
 void duckx::Document::save() const {
@@ -278,6 +277,10 @@ void duckx::Document::save() const {
     // - copy the old files
     // - delete old docx
     // - rename new file to old file
+
+    // Read document buffer
+    xml_string_writer writer;
+    this->document.print(writer);
 
     // Open file and replace "xml" content
 
@@ -290,21 +293,22 @@ void duckx::Document::save() const {
 
     // Write out document.xml
     zip_entry_open(new_zip, "word/document.xml");
-    xml_string_writer writer;
-    this->document.print(writer);
 
     const char *buf = writer.result.c_str();
+
     zip_entry_write(new_zip, buf, strlen(buf));
     zip_entry_close(new_zip);
 
     // Open the original zip and copy all files which are not replaced by duckX
     zip_t *orig_zip =
         zip_open(original_file.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
+
     // Loop & copy each relevant entry in the original zip
     int orig_zip_entry_ct = zip_total_entries(orig_zip);
     for (int i = 0; i < orig_zip_entry_ct; i++) {
         zip_entry_openbyindex(orig_zip, i);
         const char *name = zip_entry_name(orig_zip);
+
         // Skip copying the original file
         if (std::string(name) != std::string("word/document.xml")) {
             // Read the old content
@@ -333,11 +337,11 @@ void duckx::Document::save() const {
 }
 
 duckx::Paragraph &duckx::Document::paragraphs() {
-    this->paragraph.set_parent(document.child(L"w:document").child(L"w:body"));
+    this->paragraph.set_parent(document.child("w:document").child("w:body"));
     return this->paragraph;
 }
 
 duckx::Table &duckx::Document::tables() {
-    this->table.set_parent(document.child(L"w:document").child(L"w:body"));
+    this->table.set_parent(document.child("w:document").child("w:body"));
     return this->table;
 }
