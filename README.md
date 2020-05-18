@@ -8,7 +8,9 @@
 
 # DuckX
 
-create, read and write Microsoft Office Word docx files
+Create, read and write Microsoft Office Word docx files.
+More informations are available in [this](https://duckx.readthedocs.io/en/latest/) documentation.
+
 
 > DuckX was created when I was looking for a C++ library which can properly parse MS Word .docx files, but couldn't find any
 
