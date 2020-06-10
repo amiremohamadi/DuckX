@@ -10,7 +10,7 @@ TEST_CASE("checks contents of my_test.docx with iterator")
     duckx::Document doc("my_test.docx");
     doc.open();
 
-    std::ostringstream ss;
+    std::wostringstream ss;
 
     for (duckx::Paragraph p : doc.paragraphs())
     {
@@ -20,7 +20,7 @@ TEST_CASE("checks contents of my_test.docx with iterator")
             //std::puts(r.get_text().c_str());
         }
     }
-    std::puts(ss.str().c_str());
+    _putws(ss.str().c_str());
     CHECK_EQ("This is a test\nokay?\n", ss.str());
 }
 

@@ -22,21 +22,21 @@ duckx::Run::Run(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::Run::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child("w:r");
+    this->current = this->parent.child(L"w:r");
 }
 
 void duckx::Run::set_current(pugi::xml_node node) { this->current = node; }
 
-std::string duckx::Run::get_text() const {
-    return this->current.child("w:t").text().get();
+std::wstring duckx::Run::get_text() const {
+    return this->current.child(L"w:t").text().get();
 }
 
-bool duckx::Run::set_text(const std::string &text) const {
-    return this->current.child("w:t").text().set(text.c_str());
+bool duckx::Run::set_text(const std::wstring &text) const {
+    return this->current.child(L"w:t").text().set(text.c_str());
 }
 
-bool duckx::Run::set_text(const char *text) const {
-    return this->current.child("w:t").text().set(text);
+bool duckx::Run::set_text(const wchar_t *text) const {
+    return this->current.child(L"w:t").text().set(text);
 }
 
 duckx::Run &duckx::Run::next() {
@@ -56,7 +56,7 @@ duckx::TableCell::TableCell(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::TableCell::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child("w:tc");
+    this->current = this->parent.child(L"w:tc");
 
     this->paragraph.set_parent(this->current);
 }
@@ -87,7 +87,7 @@ duckx::TableRow::TableRow(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::TableRow::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child("w:tr");
+    this->current = this->parent.child(L"w:tr");
 
     this->cell.set_parent(this->current);
 }
@@ -116,7 +116,7 @@ duckx::Table::Table(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::Table::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child("w:tbl");
+    this->current = this->parent.child(L"w:tbl");
 
     this->row.set_parent(this->current);
 }
@@ -145,7 +145,7 @@ duckx::Paragraph::Paragraph(pugi::xml_node parent, pugi::xml_node current) {
 
 void duckx::Paragraph::set_parent(pugi::xml_node node) {
     this->parent = node;
-    this->current = this->parent.child("w:p");
+    this->current = this->parent.child(L"w:p");
 
     this->run.set_parent(this->current);
 }
@@ -167,66 +167,66 @@ duckx::Run &duckx::Paragraph::runs() {
     return this->run;
 }
 
-duckx::Run &duckx::Paragraph::add_run(const std::string &text,
+duckx::Run &duckx::Paragraph::add_run(const std::wstring &text,
                                       duckx::formatting_flag f) {
     return this->add_run(text.c_str(), f);
 }
 
-duckx::Run &duckx::Paragraph::add_run(const char *text,
+duckx::Run &duckx::Paragraph::add_run(const wchar_t *text,
                                       duckx::formatting_flag f) {
     // Add new run
-    pugi::xml_node new_run = this->current.append_child("w:r");
+    pugi::xml_node new_run = this->current.append_child(L"w:r");
     // Insert meta to new run
-    pugi::xml_node meta = new_run.append_child("w:rPr");
+    pugi::xml_node meta = new_run.append_child(L"w:rPr");
 
     if (f & duckx::bold)
-        meta.append_child("w:b");
+        meta.append_child(L"w:b");
 
     if (f & duckx::italic)
-        meta.append_child("w:i");
+        meta.append_child(L"w:i");
 
     if (f & duckx::underline)
-        meta.append_child("w:u").append_attribute("w:val").set_value("single");
+        meta.append_child(L"w:u").append_attribute(L"w:val").set_value(L"single");
 
     if (f & duckx::strikethrough)
-        meta.append_child("w:strike")
-            .append_attribute("w:val")
-            .set_value("true");
+        meta.append_child(L"w:strike")
+            .append_attribute(L"w:val")
+            .set_value(L"true");
 
     if (f & duckx::superscript)
-        meta.append_child("w:vertAlign")
-            .append_attribute("w:val")
-            .set_value("superscript");
+        meta.append_child(L"w:vertAlign")
+            .append_attribute(L"w:val")
+            .set_value(L"superscript");
     else if (f & duckx::subscript)
-        meta.append_child("w:vertAlign")
-            .append_attribute("w:val")
-            .set_value("subscript");
+        meta.append_child(L"w:vertAlign")
+            .append_attribute(L"w:val")
+            .set_value(L"subscript");
 
     if (f & duckx::smallcaps)
-        meta.append_child("w:smallCaps")
-            .append_attribute("w:val")
-            .set_value("true");
+        meta.append_child(L"w:smallCaps")
+            .append_attribute(L"w:val")
+            .set_value(L"true");
 
     if (f & duckx::shadow)
-        meta.append_child("w:shadow")
-            .append_attribute("w:val")
-            .set_value("true");
+        meta.append_child(L"w:shadow")
+            .append_attribute(L"w:val")
+            .set_value(L"true");
 
-    pugi::xml_node new_run_text = new_run.append_child("w:t");
+    pugi::xml_node new_run_text = new_run.append_child(L"w:t");
     // If the run starts or ends with whitespace characters, preserve them using
     // the xml:space attribute
-    if (*text != 0 && (isspace(text[0]) || isspace(text[strlen(text) - 1])))
-        new_run_text.append_attribute("xml:space").set_value("preserve");
+    if (*text != 0 && (isspace(text[0]) || isspace(text[wcslen(text) - 1])))
+        new_run_text.append_attribute(L"xml:space").set_value(L"preserve");
     new_run_text.text().set(text);
 
     return *new Run(this->current, new_run);
 }
 
 duckx::Paragraph &
-duckx::Paragraph::insert_paragraph_after(const std::string &text,
+duckx::Paragraph::insert_paragraph_after(const std::wstring &text,
                                          duckx::formatting_flag f) {
     pugi::xml_node new_para =
-        this->parent.insert_child_after("w:p", this->current);
+        this->parent.insert_child_after(L"w:p", this->current);
 
     Paragraph *p = new Paragraph();
     p->set_current(new_para);
@@ -266,7 +266,7 @@ void duckx::Document::open() {
 
     free(buf);
 
-    this->paragraph.set_parent(document.child("w:document").child("w:body"));
+    this->paragraph.set_parent(document.child(L"w:document").child(L"w:body"));
 }
 
 void duckx::Document::save() const {
@@ -337,11 +337,11 @@ void duckx::Document::save() const {
 }
 
 duckx::Paragraph &duckx::Document::paragraphs() {
-    this->paragraph.set_parent(document.child("w:document").child("w:body"));
+    this->paragraph.set_parent(document.child(L"w:document").child(L"w:body"));
     return this->paragraph;
 }
 
 duckx::Table &duckx::Document::tables() {
-    this->table.set_parent(document.child("w:document").child("w:body"));
+    this->table.set_parent(document.child(L"w:document").child(L"w:body"));
     return this->table;
 }
