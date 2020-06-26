@@ -12,6 +12,7 @@ class Run {
     // wrapping <w:r> element
   private:
     friend class IteratorHelper;
+    friend class Paragraph;
     // store parent and current node to be able to navigate whole the tree
     pugi::xml_node parent;
     pugi::xml_node current;
