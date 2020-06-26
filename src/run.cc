@@ -8,8 +8,8 @@
 
 // constructs attribute from xml_node
 duckx::Run::Run(pugi::xml_node parent, pugi::xml_node current) {
-    this->set_parent(parent);
-    this->set_current(current);
+    this->parent = parent;
+    this->current = current;
 }
 
 // default constructor
