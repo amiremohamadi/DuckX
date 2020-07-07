@@ -12,14 +12,23 @@ duckx::Paragraph::Paragraph(pugi::xml_node parent, pugi::xml_node current) {
     this->current = current;
 }
 
-// default constructor
-duckx::Paragraph::Paragraph() {}
+// set current xml node
+void duckx::Paragraph::set_current(pugi::xml_node node) {
+    this->current = node;
+    // child must be updated also
+    this->run.set_parent(this->current);
+}
+
+// set parent xml node
+void duckx::Paragraph::set_parent(pugi::xml_node node) {
+    // when parent changes, the child must be updated also
+    this->parent = node;
+    this->set_current(this->parent.child("w:p"));
+}
 
 // get next attribute
 duckx::Paragraph &duckx::Paragraph::next() {
-    this->current = this->current.next_sibling();
-    // paragraph::run points to the current run inside the paragraph
-    this->run.parent = this->current;
+    this->set_current(this->current.next_sibling());
     return *this;
 }
 
@@ -29,15 +38,15 @@ bool duckx::Paragraph::has_next() const { return this->current != 0; }
 // return the first run
 duckx::Run &duckx::Paragraph::runs() {
     // the run must point to the first run in the current paragraph
-    this->run.parent = this->current;
+    this->run.set_parent(this->current);
     return this->run;
 }
 
 // append run to the paragraph (the actual run)
 duckx::Run &duckx::Paragraph::add_run(duckx::Run run) {
-    duckx::Run new_run = new duckx::Run(run);
+    duckx::Run *new_run = new duckx::Run(run);
     // set the parent to the current paragraph
-    new_run->parent = this->current;
+    new_run->set_parent(this->current);
     return *new_run;
 }
 

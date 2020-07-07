@@ -12,8 +12,14 @@ duckx::Run::Run(pugi::xml_node parent, pugi::xml_node current) {
     this->current = current;
 }
 
-// default constructor
-duckx::Run::Run() {}
+// set current xml node
+void duckx::Run::set_current(pugi::xml_node node) { this->current = node; }
+
+// set parent xml node
+void duckx::Run::set_parent(pugi::xml_node node) {
+    this->parent = node;
+    this->set_current(this->parent.child("w:r"));
+}
 
 // get attribute text
 std::string duckx::Run::get_text() const {
@@ -32,7 +38,7 @@ bool duckx::Run::set_text(const char *text) const {
 
 // get next attribute
 duckx::Run &duckx::Run::next() {
-    this->current = this->current.next_sibling();
+    this->set_current(this->current.next_sibling());
     return *this;
 }
 

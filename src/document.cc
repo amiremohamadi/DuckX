@@ -5,6 +5,7 @@
  */
 
 #include <duckx/document.hh>
+#include <iostream>
 
 // overload pugi_xml writer to use in save method
 // we wanna save a bunch of bytes (void *) as char
@@ -32,10 +33,20 @@ void duckx::Document::open() {
     // open file and load "xml" content to the document variable
     zip_t *zip = zip_open(this->directory.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
 
+    if (zip == NULL) {
+        // raise error
+        return;
+    }
+
     // open the document file
     // TODO: it would be good to check if this file is exist
     // and in case of not existing raise an exception
-    zip_entry_open(zip, "word/document.xml");
+    int err = zip_entry_open(zip, "word/document.xml");
+
+    if (err == -1) {
+        // raise error
+        return;
+    }
     // load contents to buffer (as bytes)
     zip_entry_read(zip, &buf, &bufsize);
 
@@ -87,8 +98,11 @@ void duckx::Document::save() const {
     // number of entries
     int orig_zip_entry_ct = zip_total_entries(orig_zip);
 
+    // TODO: check if the file is empty (the file is broken)
+
     // loop and copy each relevant entry in the original zip
     for (int i = 0; i < orig_zip_entry_ct; i++) {
+
         // open entries one by one
         zip_entry_openbyindex(orig_zip, i);
         const char *name = zip_entry_name(orig_zip);
@@ -103,8 +117,8 @@ void duckx::Document::save() const {
             // write into new zip
             zip_entry_open(new_zip, name);
             zip_entry_write(new_zip, entry_buf, entry_buf_size);
-            zip_entry_close(new_zip);
 
+            zip_entry_close(new_zip);
             free(entry_buf);
         }
 
