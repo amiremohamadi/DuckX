@@ -9,6 +9,11 @@ endif()
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_SAMPLES "Build provided samples" OFF)
 
+# Fix issues when building with clang 12, next version of clang
+# else we might encounter errors making the library 
+# not being able to be compiled
+
+set(CMAKE_CXX_STANDARD 11)
 
 set(HEADERS "${CMAKE_SOURCE_DIR}/include/duckx.hpp"
             "${CMAKE_SOURCE_DIR}/include/constants.hpp"
