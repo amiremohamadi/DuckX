@@ -15,19 +15,19 @@ option(BUILD_SAMPLES "Build provided samples" OFF)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(HEADERS "${CMAKE_SOURCE_DIR}/include/duckx.hpp"
-            "${CMAKE_SOURCE_DIR}/include/constants.hpp"
-            "${CMAKE_SOURCE_DIR}/include/duckxiterator.hpp")
+set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/duckx.hpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/include/constants.hpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/include/duckxiterator.hpp")
 set(SOURCES src/duckx.cpp)
 
-set(THIRD_PARTY_HEADERS "${CMAKE_SOURCE_DIR}/thirdparty/pugixml/pugixml.hpp"
-                        "${CMAKE_SOURCE_DIR}/thirdparty/pugixml/pugiconfig.hpp"
-                        "${CMAKE_SOURCE_DIR}/thirdparty/zip/zip.h")
-set(THIRD_PARTY_SRC "${CMAKE_SOURCE_DIR}/thirdparty/zip/zip.c")
+set(THIRD_PARTY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}SOURCE_DIR}/thirdparty/pugixml/pugixml.hpp"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml/pugiconfig.hpp"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip/zip.h")
+set(THIRD_PARTY_SRC "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip/zip.c")
 
-include_directories("${CMAKE_SOURCE_DIR}/include"
-                    "${CMAKE_SOURCE_DIR}/thirdparty/pugixml"
-                    "${CMAKE_SOURCE_DIR}/thirdparty/zip")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip")
 
 if(BUILD_SHARED_LIBS)
     add_library(duckx SHARED ${SOURCES} ${THIRD_PARTY_SRC})
