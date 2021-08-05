@@ -71,6 +71,13 @@ cmake --build .
 - [pugixml](https://github.com/zeux/pugixml)
 
 
+### Donation
+> Please consider donating to sustain our activities.
+<p align="left"><img src="img/btcqr.png" width="280"></p>
+
+BITCOIN: bc1qex0wdwp22alnmvncxs3gyj5q5jaucsvpkp4d6z
+
+
 ### Licensing
 
 This library is available to anybody free of charge, under the terms of MIT License (see LICENSE.md).
