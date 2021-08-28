@@ -25,9 +25,9 @@ set(THIRD_PARTY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml/pugixml.
                         "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip/zip.h")
 set(THIRD_PARTY_SRC "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip/zip.c")
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip")
+# include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
+#                     "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
+#                     "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip")
 
 if(BUILD_SHARED_LIBS)
     add_library(duckx SHARED ${SOURCES} ${THIRD_PARTY_SRC})
@@ -39,6 +39,9 @@ add_library(duckx::duckx ALIAS duckx)
 
 target_include_directories(duckx PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip>
     $<INSTALL_INTERFACE:include>
 )
 
