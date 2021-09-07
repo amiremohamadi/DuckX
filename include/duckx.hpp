@@ -8,7 +8,6 @@
 #define DUCKX_H
 
 #include <cstdio>
-#include <stdlib.h>
 #include <string>
 
 #include <constants.hpp>
