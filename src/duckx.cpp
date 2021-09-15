@@ -212,6 +212,11 @@ duckx::Run &duckx::Paragraph::add_run(const char *text,
             .append_attribute("w:val")
             .set_value("true");
 
+	if (f & duckx::hidden)
+        meta.append_child("w:vanish")
+            .append_attribute("w:val")
+            .set_value("true");
+
     pugi::xml_node new_run_text = new_run.append_child("w:t");
     // If the run starts or ends with whitespace characters, preserve them using
     // the xml:space attribute
