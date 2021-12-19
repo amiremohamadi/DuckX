@@ -36,3 +36,6 @@ build/*
 
 # vim swap files
 **/*.swp
+
+# dev script
+scr.sh

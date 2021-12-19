@@ -67,7 +67,7 @@ cmake --build .
 
 ## Requirements ##
 
-- [zip](https://github.com/kuba--/zip)
+- [libzip](https://github.com/nih-at/libzip)
 - [pugixml](https://github.com/zeux/pugixml)
 
 
