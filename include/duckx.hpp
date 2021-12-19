@@ -7,6 +7,7 @@
 #ifndef DUCKX_H
 #define DUCKX_H
 
+#include <bits/stdc++.h>
 #include <cstdio>
 #include <stdlib.h>
 #include <string>
@@ -16,7 +17,18 @@
 #include <pugixml.hpp>
 #include <zip.h>
 
+#define PROD
+
+#ifndef PROD
+#define DEBUG(x) cout << "[DEBUG] " << #x << ": " << (x) << endl;
+#else
+#define DEBUG
+#endif
+
 // TODO: Use container-iterator design pattern!
+
+struct xml_string_writer;
+
 
 namespace duckx {
 // Run contains runs in a paragraph
@@ -133,22 +145,42 @@ class Table {
     TableRow &rows();
 };
 
+enum class MODE {
+    FILE,
+    BUFFER,
+};
+
 // Document contains whole the docx file
 // and stores paragraphs
 class Document {
   private:
     friend class IteratorHelper;
     std::string directory;
+    MODE mode;
     Paragraph paragraph;
     Table table;
     pugi::xml_document document;
+    zip_error_t zipError;
+    int *errorp;
+    zip_file_t* docFile = NULL;
+    zip_t* zip = NULL;
+    char* buf;
+    size_t bufLen;
+    //the only way I know to write to zip is wait for zip_close, 
+    //so we need to keep writers in order to flush it's contents to actual file
+    std::vector<std::shared_ptr<xml_string_writer>> saveWriters; 
 
   public:
     Document();
+    ~Document();
     Document(std::string);
+    Document(char*, size_t);
     void file(std::string);
+    void buffer(char*, size_t);
     void open();
-    void save() const;
+    void close();
+    void save(const char* dst = NULL);
+    //void save(const char*) const;
 
     Paragraph &paragraphs();
     Table &tables();
