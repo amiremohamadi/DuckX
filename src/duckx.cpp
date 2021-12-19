@@ -240,28 +240,28 @@ duckx::Document::Document() : mode{MODE::FILE}, directory{""} { }
 
 duckx::Document::Document(std::string directory) : mode{MODE::FILE}, directory{directory} { }
 
-duckx::Document::Document(char* zipBuf, size_t len) : mode{MODE::BUFFER}, buf{zipBuf}, bufLen{len} { }
+duckx::Document::Document(char* zip_buf, size_t len) : mode{MODE::BUFFER}, buf{zip_buf}, buf_len{len} { }
 
 void duckx::Document::file(std::string directory) {
     this->mode = MODE::FILE;
     this->directory = directory;
 }
 
-void duckx::Document::buffer(char* zipBuf, size_t len) {
+void duckx::Document::buffer(char* zip_buf, size_t len) {
     this->mode = MODE::BUFFER;
-    this->buf = zipBuf;
-    this->bufLen = len;
+    this->buf = zip_buf;
+    this->buf_len = len;
 }
 
 duckx::Document::~Document() {
     //makes double free or corruption
-    //if (zip != NULL) zip_close(zip);
+    //if (this->zip != NULL) zip_close(zip);
 }
 
 void duckx::Document::close() {
-    if (zip != NULL) zip_close(zip);
-    zip = NULL;
-    this->saveWriters.clear();
+    if (this->zip != NULL) zip_close(this->zip);
+    this->zip = NULL;
+    this->save_writers.clear();
 }
 
 void duckx::Document::open() {
@@ -269,21 +269,21 @@ void duckx::Document::open() {
 
     // Open file and load "xml" content to the document variable
     //if (zip != NULL) zip_close(zip);
-    zip = this->mode == MODE::FILE ? 
+    this->zip = this->mode == MODE::FILE ? 
         zip_open(this->directory.c_str(), ZIP_CREATE, NULL) : /*this->mode == MODE::BUFFER*/
-        zip_open_from_source(zip_source_buffer_create(this->buf, this->bufLen, 0, &zipError), 0, &zipError) ;
-    docFile = zip_fopen(zip, "word/document.xml", 0);
-    if (!docFile) throw "Something's wrong with the document";
+        zip_open_from_source(zip_source_buffer_create(this->buf, this->buf_len, 0, &this->zip_error), 0, &this->zip_error) ;
+    zip_file_t* doc_file = zip_fopen(this->zip, "word/document.xml", 0);
+    if (!doc_file) throw "Something's wrong with the document";
     struct zip_stat sb;
-    zip_stat(zip, "word/document.xml", 0, &sb);
-    size_t bufSize = sb.size;
-    void* docBuf = malloc(bufSize);
-    zip_fread(docFile, docBuf, bufSize);
-    this->document.load_buffer(docBuf, bufSize);
+    zip_stat(this->zip, "word/document.xml", 0, &sb);
+    size_t buf_size = sb.size;
+    void* doc_buf = malloc(buf_size);
+    zip_fread(doc_file, doc_buf, buf_size);
+    this->document.load_buffer(doc_buf, buf_size);
 
 
-    free(docBuf);
-    zip_fclose(docFile);
+    free(doc_buf);
+    zip_fclose(doc_file);
 
     this->paragraph.set_parent(document.child("w:document").child("w:body"));
 
@@ -298,41 +298,42 @@ void duckx::Document::save(const char* dst) {
     //see comment in include/duckx.hpp about writers
     /*xml_string_writer writer; 
     this->document.print(writer);
-    char* newBuf = writer.result.c_str();*/
+    char* new_buf = writer.result.c_str();*/
 
 
     if (dst == NULL) {
         auto writer = make_shared<xml_string_writer>();
-        this->saveWriters.push_back(writer);
+        this->save_writers.push_back(writer);
         this->document.print(*writer);
-        const char* newBuf = writer->result.c_str();
-        auto source = zip_source_buffer_create(newBuf, strlen(newBuf), 0, &zipError);
-        auto idx = zip_name_locate(zip, "word/document.xml", 0);
-        zip_replace(zip, idx, source);
+        const char* new_buf = writer->result.c_str();
+        auto source = zip_source_buffer_create(new_buf, strlen(new_buf), 0, &this->zip_error);
+        auto idx = zip_name_locate(this->zip, "word/document.xml", 0);
+        zip_replace(this->zip, idx, source);
     }
     else {
         xml_string_writer writer; 
         this->document.print(writer);
-        const char* newBuf = writer.result.c_str();
-        zip_t* dstZip = zip_open(dst, ZIP_CREATE /*| ZIP_TRUNCATE*/, errorp);
-        for (int i = 0; i < zip_get_num_entries(zip, 0); ++i) {
-            auto name = zip_get_name(zip, i, 0);
+        const char* new_buf = writer.result.c_str();
+        zip_t* dst_zip = zip_open(dst, ZIP_CREATE /*| ZIP_TRUNCATE*/, errorp);
+        for (int i = 0; i < zip_get_num_entries(this->zip, 0); ++i) {
+            auto name = zip_get_name(this->zip, i, 0);
             if (string(name) != "word/document.xml") {
-                auto file = zip_fopen_index(zip, i, /*ZIP_FL_COMPRESSED*/ 0); //TODO unnecessary decompression + compression, need to think of workaround 
+                //TODO unnecessary decompression + compression, need to think of workaround 
+                auto file = zip_fopen_index(this->zip, i, /*ZIP_FL_COMPRESSED*/ 0); 
                 struct zip_stat sb;
-                zip_stat(zip, name, 0, &sb);
+                zip_stat(this->zip, name, 0, &sb);
                 auto fsize = /*sb.comp_size*/ sb.size;
-                auto tmpBuf = malloc(fsize);
-                DEBUG(zip_fread(file, tmpBuf, fsize));
-                auto source = zip_source_buffer_create(tmpBuf, fsize, 1, &zipError);
+                auto tmp_buf = malloc(fsize);
+                DEBUG(zip_fread(file, tmp_buf, fsize));
+                auto source = zip_source_buffer_create(tmp_buf, fsize, 1, &this->zip_error);
                 DEBUG(source);
-                DEBUG(zip_file_add(dstZip, name, source, ZIP_FL_OVERWRITE));
+                DEBUG(zip_file_add(dst_zip, name, source, ZIP_FL_OVERWRITE));
                 zip_fclose(file);
             }
         }
-        auto source = zip_source_buffer_create(newBuf, strlen(newBuf), 0, &zipError);
-        zip_file_add(dstZip, "word/document.xml", source, ZIP_FL_OVERWRITE);
-        zip_close(dstZip);
+        auto source = zip_source_buffer_create(new_buf, strlen(new_buf), 0, &this->zip_error);
+        zip_file_add(dst_zip, "word/document.xml", source, ZIP_FL_OVERWRITE);
+        zip_close(dst_zip);
     }
 }
 

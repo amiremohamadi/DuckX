@@ -160,15 +160,14 @@ class Document {
     Paragraph paragraph;
     Table table;
     pugi::xml_document document;
-    zip_error_t zipError;
+    zip_error_t zip_error;
     int *errorp;
-    zip_file_t* docFile = NULL;
     zip_t* zip = NULL;
     char* buf;
-    size_t bufLen;
+    size_t buf_len;
     //the only way I know to write to zip is wait for zip_close, 
     //so we need to keep writers in order to flush it's contents to actual file
-    std::vector<std::shared_ptr<xml_string_writer>> saveWriters; 
+    std::vector<std::shared_ptr<xml_string_writer>> save_writers; 
 
   public:
     Document();
