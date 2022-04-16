@@ -35,7 +35,10 @@ class Run {
     void set_current(pugi::xml_node);
 
     std::string get_text() const;
-    bool set_text(const std::string &) const;
+	inline bool set_text(const std::string &t) const
+	{ 
+		return set_text(t.c_str());
+	};
     bool set_text(const char *) const;
 
     Run &next();
@@ -64,8 +67,11 @@ class Paragraph {
     bool has_next() const;
 
     Run &runs();
-    Run &add_run(const std::string &, duckx::formatting_flag = duckx::none);
-    Run &add_run(const char *, duckx::formatting_flag = duckx::none);
+	inline Run &add_run(const std::string &t, duckx::formatting_flag f = duckx::none)
+	{
+		return add_run(t.c_str(), f);
+	}
+	Run &add_run(const char *, duckx::formatting_flag = duckx::none);
     Paragraph &insert_paragraph_after(const std::string &,
                                       duckx::formatting_flag = duckx::none);
 };

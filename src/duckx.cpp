@@ -31,10 +31,6 @@ std::string duckx::Run::get_text() const {
     return this->current.child("w:t").text().get();
 }
 
-bool duckx::Run::set_text(const std::string &text) const {
-    return this->current.child("w:t").text().set(text.c_str());
-}
-
 bool duckx::Run::set_text(const char *text) const {
     return this->current.child("w:t").text().set(text);
 }
@@ -165,11 +161,6 @@ bool duckx::Paragraph::has_next() const { return this->current != 0; }
 duckx::Run &duckx::Paragraph::runs() {
     this->run.set_parent(this->current);
     return this->run;
-}
-
-duckx::Run &duckx::Paragraph::add_run(const std::string &text,
-                                      duckx::formatting_flag f) {
-    return this->add_run(text.c_str(), f);
 }
 
 duckx::Run &duckx::Paragraph::add_run(const char *text,
