@@ -63,7 +63,8 @@ class Paragraph {
     void set_parent(pugi::xml_node);
     void set_current(pugi::xml_node);
 
-    Paragraph &next();
+	Paragraph &append();
+	Paragraph &next();
     bool has_next() const;
 
     Run &runs();
@@ -133,8 +134,9 @@ class Table {
     void set_parent(pugi::xml_node);
     void set_current(pugi::xml_node);
 
-    Table &next();
-    bool has_next() const;
+	Table &append();
+	Table &next();
+	bool has_next() const;
 
     TableRow &rows();
 };
@@ -155,6 +157,7 @@ class Document {
     void file(std::string);
     void open();
     void save() const;
+	void clear();
 
     Paragraph &paragraphs();
     Table &tables();
