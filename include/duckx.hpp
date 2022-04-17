@@ -63,16 +63,16 @@ class Paragraph {
     void set_parent(pugi::xml_node);
     void set_current(pugi::xml_node);
 
-	Paragraph &append();
-	Paragraph &next();
+    Paragraph &append();
+    Paragraph &next();
     bool has_next() const;
 
     Run &runs();
-	inline Run &add_run(const std::string &t, duckx::formatting_flag f = duckx::none)
-	{
-		return add_run(t.c_str(), f);
-	}
-	Run &add_run(const char *, duckx::formatting_flag = duckx::none);
+    inline Run &add_run(const std::string &t, duckx::formatting_flag f = duckx::none)
+    {
+        return add_run(t.c_str(), f);
+    }
+    Run &add_run(const char *, duckx::formatting_flag = duckx::none);
     Paragraph &insert_paragraph_after(const std::string &,
                                       duckx::formatting_flag = duckx::none);
 };
@@ -134,9 +134,9 @@ class Table {
     void set_parent(pugi::xml_node);
     void set_current(pugi::xml_node);
 
-	Table &append();
-	Table &next();
-	bool has_next() const;
+    Table &append();
+    Table &next();
+    bool has_next() const;
 
     TableRow &rows();
 };
@@ -157,7 +157,7 @@ class Document {
     void file(std::string);
     void open();
     void save() const;
-	void clear();
+    void clear();
 
     Paragraph &paragraphs();
     Table &tables();
