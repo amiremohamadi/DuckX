@@ -66,6 +66,21 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
     fread(mo.content.data(), nSize, 1, fp);
     fclose(fp);
 
+    current = parent.append_child("w:r");
+    current.append_child("w:rPr").append_child("w:noProof");
+
+    std::string descr = lpszPath;
+    int nIndex = descr.find_last_of('/');
+    if (nIndex > 0)
+    {
+        descr = descr.substr(nIndex + 1);
+    }
+    nIndex = descr.find_last_of('\\');
+    if (nIndex > 0)
+    {
+        descr = descr.substr(nIndex + 1);
+    }
+
     //`word/document.xml`, cx="{0}" cy="{1}" embed="{2}" name="{3}" descr="{4}"
     // ooxml uses image size in EMU : 
     // image in inches(in) is : pt / 72
@@ -77,10 +92,10 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
         //std::string rid = doc_rel.attribute("Id").value();
         i++;
     }
-    std::string embed = "rId" + std::to_string(i); //"rId" + uid
-    std::string pic_name = "media/image" + std::to_string(i) + ".png";
-    std::string name = "Picture " + std::to_string(i); //"Picture " + uid
-    std::string descr = "";
+    std::string sId = std::to_string(i);
+    std::string embed = "rId" + sId;
+    std::string pic_name = "media/image" + sId + ".png";
+    std::string name = "Picture" + sId;
     auto this_run = current;
     auto drawing = this_run.append_child("w:drawing");
     auto wpinline = drawing.append_child("wp:inline");
@@ -88,7 +103,7 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
     wpinline.append_attribute("distB").set_value("0");
     wpinline.append_attribute("distL").set_value("0");
     wpinline.append_attribute("distR").set_value("0");
-    wpinline.append_attribute("xmlns:wp").set_value("http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
+//     wpinline.append_attribute("xmlns:wp").set_value("http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
     auto wpextent = wpinline.append_child("wp:extent");
     wpextent.append_attribute("cx").set_value(std::to_string(cx).c_str());
     wpextent.append_attribute("cy").set_value(std::to_string(cy).c_str());
@@ -98,7 +113,7 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
     wpeffectExtent.append_attribute("r").set_value("0");
     wpeffectExtent.append_attribute("b").set_value("0");
     auto wpdocPr = wpinline.append_child("wp:docPr");
-    wpdocPr.append_attribute("id").set_value("0");
+    wpdocPr.append_attribute("id").set_value(sId.c_str());
     wpdocPr.append_attribute("name").set_value(name.c_str());
     wpdocPr.append_attribute("descr").set_value(descr.c_str());
     auto wpcNvGraphicFramePr = wpinline.append_child("wp:cNvGraphicFramePr");
@@ -114,14 +129,14 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
     auto picnvPicPr = picpic.append_child("pic:nvPicPr");
     auto piccNvPr = picnvPicPr.append_child("pic:cNvPr");
     piccNvPr.append_attribute("id").set_value("0");
-    piccNvPr.append_attribute("name").set_value(name.c_str());
+    piccNvPr.append_attribute("name").set_value(descr.c_str());
     auto piccNvPicPr = picnvPicPr.append_child("pic:cNvPicPr");
-    auto apicLocks = piccNvPicPr.append_child("a:picLocks");
-    apicLocks.append_attribute("noChangeAspect").set_value("1");
+    //auto apicLocks = piccNvPicPr.append_child("a:picLocks");
+    //apicLocks.append_attribute("noChangeAspect").set_value("1");
     auto picblipFill = picpic.append_child("pic:blipFill");
     auto ablip = picblipFill.append_child("a:blip");
     ablip.append_attribute("r:embed").set_value(embed.c_str());
-    ablip.append_attribute("xmlns:r").set_value("http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+    ablip.append_attribute("cstate").set_value("print");
     auto astretch = picblipFill.append_child("a:stretch");
     auto afillRect = astretch.append_child("a:fillRect");
     auto picspPr = picpic.append_child("pic:spPr");
