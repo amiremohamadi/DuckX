@@ -14,11 +14,20 @@
 #include <constants.hpp>
 #include <duckxiterator.hpp>
 #include <pugixml.hpp>
+#include <vector>
 
 // TODO: Use container-iterator design pattern!
 
 namespace duckx {
 #define make_rgb(r, g, b) ((((unsigned char)r)<<16)|(((unsigned char)g)<<8)|((unsigned char)b))
+
+struct MediaObject
+{
+    char    szName[24]; // media name saved into `word\media` directory
+    std::vector<char> content; // media content
+};
+
+class Document;
 // Run contains runs in a paragraph
 class Run {
   private:
@@ -37,6 +46,7 @@ class Run {
     std::string get_text() const;
     inline bool set_text(const std::string &t) const { return set_text(t.c_str()); };
     bool set_text(const char *) const;
+    bool add_picture(Document &doc, const char *lpszPath, int w, int h);
 
     Run &next();
     bool has_next() const;
@@ -159,7 +169,9 @@ class Document {
     std::string directory;
     Paragraph paragraph;
     Table table;
-    pugi::xml_document document;
+    pugi::xml_document document;//`word/document.xml`
+    pugi::xml_document _doc_rels; //`word/_rels/document.xml.rels`
+    std::vector<MediaObject> _medias;
 
   public:
     Document();
@@ -168,6 +180,8 @@ class Document {
     bool open();
     bool save() const;
     void clear();
+    inline pugi::xml_document& get_doc_rels() { return _doc_rels; };
+    std::vector<MediaObject>& medias() { return _medias; };
 
 	Paragraph &paragraphs();
 	Table &tables();

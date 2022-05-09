@@ -40,6 +40,115 @@ bool duckx::Run::set_text(const char *text) const {
     return this->current.child("w:t").text().set(text);
 }
 
+bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
+{
+    const char *pExt = lpszPath + strlen(lpszPath) - 4;
+    if (stricmp(".png", pExt))
+    {
+        return false;
+    }
+
+    FILE *fp = fopen(lpszPath, "r+b");
+    if (fp == NULL)
+    {
+        return false;
+    }
+    fseek(fp, 0, SEEK_END);
+    int nSize = ftell(fp);
+    if (nSize < 16)
+    {
+        return false;
+    }
+
+    MediaObject mo;
+    mo.content.resize(nSize);
+    fseek(fp, 0, SEEK_SET);
+    fread(mo.content.data(), nSize, 1, fp);
+    fclose(fp);
+
+    //`word/document.xml`, cx="{0}" cy="{1}" embed="{2}" name="{3}" descr="{4}"
+    // ooxml uses image size in EMU : 
+    // image in inches(in) is : pt / 72
+    // image in EMU is : in * 914400
+    int cx = (int)(w * 12700);
+    int cy = (int)(h * 12700);
+    int i = 1;
+    for (auto & doc_rel : doc.get_doc_rels().child("Relationships").children("Relationship")) {
+        //std::string rid = doc_rel.attribute("Id").value();
+        i++;
+    }
+    std::string embed = "rId" + std::to_string(i); //"rId" + uid
+    std::string pic_name = "media/image" + std::to_string(i) + ".png";
+    std::string name = "Picture " + std::to_string(i); //"Picture " + uid
+    std::string descr = "";
+    auto this_run = current;
+    auto drawing = this_run.append_child("w:drawing");
+    auto wpinline = drawing.append_child("wp:inline");
+    wpinline.append_attribute("distT").set_value("0");
+    wpinline.append_attribute("distB").set_value("0");
+    wpinline.append_attribute("distL").set_value("0");
+    wpinline.append_attribute("distR").set_value("0");
+    wpinline.append_attribute("xmlns:wp").set_value("http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
+    auto wpextent = wpinline.append_child("wp:extent");
+    wpextent.append_attribute("cx").set_value(std::to_string(cx).c_str());
+    wpextent.append_attribute("cy").set_value(std::to_string(cy).c_str());
+    auto wpeffectExtent = wpinline.append_child("wp:effectExtent");
+    wpeffectExtent.append_attribute("l").set_value("0");
+    wpeffectExtent.append_attribute("t").set_value("0");
+    wpeffectExtent.append_attribute("r").set_value("0");
+    wpeffectExtent.append_attribute("b").set_value("0");
+    auto wpdocPr = wpinline.append_child("wp:docPr");
+    wpdocPr.append_attribute("id").set_value("0");
+    wpdocPr.append_attribute("name").set_value(name.c_str());
+    wpdocPr.append_attribute("descr").set_value(descr.c_str());
+    auto wpcNvGraphicFramePr = wpinline.append_child("wp:cNvGraphicFramePr");
+    auto agraphicFrameLocks = wpcNvGraphicFramePr.append_child("a:graphicFrameLocks");
+    agraphicFrameLocks.append_attribute("xmlns:a").set_value("http://schemas.openxmlformats.org/drawingml/2006/main");
+    agraphicFrameLocks.append_attribute("noChangeAspect").set_value("1");
+    auto agraphic = wpinline.append_child("a:graphic");
+    agraphic.append_attribute("xmlns:a").set_value("http://schemas.openxmlformats.org/drawingml/2006/main");
+    auto agraphicData = agraphic.append_child("a:graphicData");
+    agraphicData.append_attribute("uri").set_value("http://schemas.openxmlformats.org/drawingml/2006/picture");
+    auto picpic = agraphicData.append_child("pic:pic");
+    picpic.append_attribute("xmlns:pic").set_value("http://schemas.openxmlformats.org/drawingml/2006/picture");
+    auto picnvPicPr = picpic.append_child("pic:nvPicPr");
+    auto piccNvPr = picnvPicPr.append_child("pic:cNvPr");
+    piccNvPr.append_attribute("id").set_value("0");
+    piccNvPr.append_attribute("name").set_value(name.c_str());
+    auto piccNvPicPr = picnvPicPr.append_child("pic:cNvPicPr");
+    auto apicLocks = piccNvPicPr.append_child("a:picLocks");
+    apicLocks.append_attribute("noChangeAspect").set_value("1");
+    auto picblipFill = picpic.append_child("pic:blipFill");
+    auto ablip = picblipFill.append_child("a:blip");
+    ablip.append_attribute("r:embed").set_value(embed.c_str());
+    ablip.append_attribute("xmlns:r").set_value("http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+    auto astretch = picblipFill.append_child("a:stretch");
+    auto afillRect = astretch.append_child("a:fillRect");
+    auto picspPr = picpic.append_child("pic:spPr");
+    auto axfrm = picspPr.append_child("a:xfrm");
+    auto aoff = axfrm.append_child("a:off");
+    aoff.append_attribute("x").set_value("0");
+    aoff.append_attribute("y").set_value("0");
+    auto aext = axfrm.append_child("a:ext");
+    aext.append_attribute("cx").set_value(std::to_string(cx).c_str());
+    aext.append_attribute("cy").set_value(std::to_string(cy).c_str());
+    auto aprstGeom = picspPr.append_child("a:prstGeom");
+    aprstGeom.append_attribute("prst").set_value("rect");
+    auto aavLst = aprstGeom.append_child("a:avLst");
+
+    //`word/_rels/document.xml.rels`
+    pugi::xml_node doc_rid = doc.get_doc_rels().child("Relationships").append_child("Relationship");
+    doc_rid.append_attribute("Id").set_value(embed.c_str());
+    doc_rid.append_attribute("Type").set_value("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
+    doc_rid.append_attribute("Target").set_value(pic_name.c_str());
+
+    //`word\{target}` target=media\imageXX.png
+    // append `document.MediaObject`
+    strcpy(mo.szName, pic_name.c_str());
+    doc.medias().push_back(mo);
+    return true;
+}
+
 duckx::Run &duckx::Run::next() {
     this->current = this->current.next_sibling();
     return *this;
@@ -740,15 +849,19 @@ bool duckx::Document::open() {
 
     zip_entry_open(zip, "word/document.xml");
     zip_entry_read(zip, &buf, &bufsize);
-
     zip_entry_close(zip);
-    zip_close(zip);
-
     this->document.load_buffer(buf, bufsize);
-
+    this->paragraph.set_parent(document.child("w:document").child("w:body"));
     free(buf);
 
-    this->paragraph.set_parent(document.child("w:document").child("w:body"));
+    buf = NULL;
+    bufsize = 0;
+    zip_entry_open(zip, "word/_rels/document.xml.rels");
+    zip_entry_read(zip, &buf, &bufsize);
+    zip_entry_close(zip);
+    _doc_rels.load_buffer(buf, bufsize);
+    zip_close(zip);
+    free(buf);
 
     return true;
 }
@@ -765,8 +878,9 @@ bool duckx::Document::save() const {
     bool isFailed = false; //ÊÇ·ñ²Ù×÷Ê§°Ü
 
     // Read document buffer
-    xml_string_writer writer;
+    xml_string_writer writer, doc_rels_writer;
     this->document.print(writer);
+    this->_doc_rels.print(doc_rels_writer);
 
     // Open file and replace "xml" content
 
@@ -778,10 +892,13 @@ bool duckx::Document::save() const {
         zip_open(temp_file.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
 
     // Write out document.xml
-    isFailed = zip_entry_open(new_zip, "word/document.xml") < 0;
-
     const char *buf = writer.result.c_str();
+    isFailed = zip_entry_open(new_zip, "word/document.xml") < 0;
+    isFailed = isFailed || (zip_entry_write(new_zip, buf, strlen(buf)) < 0);
+    isFailed = isFailed || (zip_entry_close(new_zip) < 0);
 
+    buf = doc_rels_writer.result.c_str();
+    isFailed = zip_entry_open(new_zip, "word/_rels/document.xml.rels");
     isFailed = isFailed || (zip_entry_write(new_zip, buf, strlen(buf)) < 0);
     isFailed = isFailed || (zip_entry_close(new_zip) < 0);
 
@@ -796,7 +913,9 @@ bool duckx::Document::save() const {
         const char *name = zip_entry_name(orig_zip);
 
         // Skip copying the original file
-        if (std::string(name) != std::string("word/document.xml")) {
+        if (std::string(name) != std::string("word/document.xml")
+            && std::string(name) != std::string("word/_rels/document.xml.rels"))
+        {
             // Read the old content
             void *entry_buf = NULL;
             size_t entry_buf_size;
@@ -812,10 +931,23 @@ bool duckx::Document::save() const {
                 free(entry_buf);
             }
         }
-
         zip_entry_close(orig_zip);
     }
 
+
+    // `word/media/image_XXXXXX.png`
+    if (!this->_medias.empty())
+    {
+        for (auto& media : _medias)
+        {
+            char szT[32];
+            sprintf(szT, "word/%s", media.szName);
+            zip_entry_open(new_zip, szT);
+            zip_entry_write(new_zip, media.content.data(), media.content.size());
+            zip_entry_close(new_zip);
+        }
+    }
+    
     // Close both zips
     zip_close(orig_zip);
     zip_close(new_zip);
