@@ -57,7 +57,8 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
     int nSize = ftell(fp);
     if (nSize < 16)
     {
-        return false;
+		fclose(fp);
+		return false;
     }
 
     MediaObject mo;
@@ -157,7 +158,7 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
     doc_rid.append_attribute("Type").set_value("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
     doc_rid.append_attribute("Target").set_value(pic_name.c_str());
 
-    //`word\{target}` target=media\imageXX.png
+    //`word\{target}` target=media/imageXX.png
     // append `document.MediaObject`
     strcpy(mo.szName, pic_name.c_str());
     doc.medias().push_back(mo);
@@ -950,7 +951,7 @@ bool duckx::Document::save() const {
     }
 
 
-    // `word/media/image_XXXXXX.png`
+    // `word/media/imageXX.png`
     if (!this->_medias.empty())
     {
         for (auto& media : _medias)
