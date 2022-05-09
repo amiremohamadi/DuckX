@@ -5,6 +5,7 @@ using namespace std;
 int main() {
     duckx::Document doc("my_test.docx");
     doc.open();
+	doc.clear();
 
     duckx::Paragraph p =
         doc.paragraphs().insert_paragraph_after("You can insert text in ");
@@ -19,8 +20,7 @@ int main() {
     p.add_run("and of course ");
     p.add_run("combine them.", duckx::bold | duckx::italic | duckx::underline |
                                    duckx::smallcaps);
-	doc.clear();
-	doc.paragraphs().append().add_run("Empty docx!");
+	doc.paragraphs().insert_paragraph_after("Empty docx!");
 	doc.tables().append();
 
     doc.save();

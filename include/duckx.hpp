@@ -14,7 +14,6 @@
 #include <constants.hpp>
 #include <duckxiterator.hpp>
 #include <pugixml.hpp>
-#include <zip.h>
 
 // TODO: Use container-iterator design pattern!
 
@@ -35,10 +34,7 @@ class Run {
     void set_current(pugi::xml_node);
 
     std::string get_text() const;
-	inline bool set_text(const std::string &t) const
-	{ 
-		return set_text(t.c_str());
-	};
+    inline bool set_text(const std::string &t) const { return set_text(t.c_str()); };
     bool set_text(const char *) const;
 
     Run &next();
@@ -63,18 +59,17 @@ class Paragraph {
     void set_parent(pugi::xml_node);
     void set_current(pugi::xml_node);
 
-    Paragraph &append();
     Paragraph &next();
     bool has_next() const;
 
     Run &runs();
-    inline Run &add_run(const std::string &t, duckx::formatting_flag f = duckx::none)
-    {
-        return add_run(t.c_str(), f);
-    }
+    inline Run &add_run(const std::string &t, duckx::formatting_flag f = duckx::none) { return add_run(t.c_str(),f); };
     Run &add_run(const char *, duckx::formatting_flag = duckx::none);
     Paragraph &insert_paragraph_after(const std::string &,
                                       duckx::formatting_flag = duckx::none);
+    bool set_text(const std::string &t, duckx::formatting_flag f = duckx::none) { return set_text(t.c_str(), f); };
+    bool set_text(const char *, duckx::formatting_flag = duckx::none);
+    void add(pugi::xml_node);
 };
 
 // TableCell contains one or more paragraphs
@@ -97,6 +92,8 @@ class TableCell {
 
     TableCell &next();
     bool has_next() const;
+    void resize(int nCol = 1);
+    void add();
 };
 
 // TableRow consists of one or more TableCells
@@ -114,9 +111,10 @@ class TableRow {
     void set_current(pugi::xml_node);
 
     TableCell &cells();
-
     bool has_next() const;
     TableRow &next();
+    void resize(int nRow = 1, int nCol = 1);
+    void add();
 };
 
 // Table consists of one or more TableRow objects
@@ -137,6 +135,8 @@ class Table {
     Table &append();
     Table &next();
     bool has_next() const;
+    void resize(int nRow = 1, int nCol = 1);
+    void set_text(int nRow, int nCol, const char *lpszText);
 
     TableRow &rows();
 };
