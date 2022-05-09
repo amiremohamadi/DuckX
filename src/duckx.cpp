@@ -93,6 +93,8 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
         const char *rid = doc_rel.attribute("Id").value();
         i = max(i, atoi(rid+3));
     }
+	i++;
+
     std::string sId = std::to_string(i);
     std::string embed = "rId" + sId;
     std::string pic_name = "media/image" + sId + ".png";
