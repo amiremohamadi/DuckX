@@ -63,11 +63,12 @@ class Paragraph {
     bool has_next() const;
 
     Run &runs();
-    inline Run &add_run(const std::string &t, duckx::formatting_flag f = duckx::none) { return add_run(t.c_str(),f); };
-    Run &add_run(const char *, duckx::formatting_flag = duckx::none);
-    Paragraph &insert_paragraph_after(const std::string &,
-                                      duckx::formatting_flag = duckx::none);
-    bool set_text(const std::string &t, duckx::formatting_flag f = duckx::none) { return set_text(t.c_str(), f); };
+    inline Run &add_run(const std::string &t, duckx::formatting_flag f = duckx::none, unsigned char nFontSize = 0, const std::string &strFontName = std::string()) { return add_run(t.c_str(),f, nFontSize, strFontName.data()); };
+    Run &add_run(const char *, duckx::formatting_flag = duckx::none, unsigned char nFontSize = 0, const char *pszFontName = NULL);
+    inline Paragraph &append(const std::string &t, duckx::formatting_flag f = duckx::none, unsigned char nFontSize = 0, const std::string &strFontName = std::string()) { return append(t.c_str(), f, nFontSize, strFontName.data()); };
+    Paragraph &append(const char *, duckx::formatting_flag = duckx::none, unsigned char nFontSize = 0, const char *pszFontName = NULL);
+    void set_alignment(paragraph_alignment a = duckx::align_left, unsigned char indent = 0, unsigned char font_size=10);
+    inline bool set_text(const std::string &t, duckx::formatting_flag f = duckx::none) { return set_text(t.c_str(), f); };
     bool set_text(const char *, duckx::formatting_flag = duckx::none);
     void add(pugi::xml_node);
 };
@@ -93,6 +94,8 @@ class TableCell {
     TableCell &next();
     bool has_next() const;
     void resize(int nCol = 1);
+    void mergeCol(int nSpanCol = 2);
+    void mergeRow(bool bStart = false);
     void add();
 };
 
@@ -114,6 +117,7 @@ class TableRow {
     bool has_next() const;
     TableRow &next();
     void resize(int nRow = 1, int nCol = 1);
+    void merge(int nStartRow = 1, int nStartCol = 1, int nSpanRow = 1, int nSpanCol = 2);
     void add();
 };
 
@@ -136,6 +140,7 @@ class Table {
     Table &next();
     bool has_next() const;
     void resize(int nRow = 1, int nCol = 1);
+    void merge(int nStartRow = 1, int nStartCol = 1, int nSpanRow = 1, int nSpanCol = 2);
     void set_text(int nRow, int nCol, const char *lpszText);
 
     TableRow &rows();
@@ -159,8 +164,8 @@ class Document {
     void save() const;
     void clear();
 
-    Paragraph &paragraphs();
-    Table &tables();
+	Paragraph &paragraphs();
+	Table &tables();
 };
 } // namespace duckx
 

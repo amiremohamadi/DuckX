@@ -8,7 +8,7 @@ int main() {
 	doc.clear();
 
     duckx::Paragraph p =
-        doc.paragraphs().insert_paragraph_after("You can insert text in ");
+        doc.paragraphs().append("You can insert text in ");
     p.add_run("italic, ", duckx::none);
     p.add_run("bold, ", duckx::bold);
     p.add_run("underline, ", duckx::strikethrough);
@@ -20,7 +20,7 @@ int main() {
     p.add_run("and of course ");
     p.add_run("combine them.", duckx::bold | duckx::italic | duckx::underline |
                                    duckx::smallcaps);
-	doc.paragraphs().insert_paragraph_after("Empty docx!");
+	doc.paragraphs().append("Empty docx!");
 	doc.tables().append();
 
     doc.save();

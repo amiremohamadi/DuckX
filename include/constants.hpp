@@ -21,6 +21,15 @@ formatting_flag intaglio = 1 << 11;
 formatting_flag doublestrikethrough = 1 << 12;
 formatting_flag hollow = 1 << 13;
 formatting_flag hide = 1 << 14;
+
+typedef enum paragraph_alignment
+{
+	align_left,
+	align_center,
+	align_right,
+	align_both
+};
+
 } // namespace duckx
 
 #endif
