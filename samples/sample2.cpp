@@ -33,6 +33,7 @@ int main() {
 	p.add_run("and of course ");
 	p.add_run("combine them.", duckx::bold | duckx::italic | duckx::underline |
 		duckx::smallcaps);
+	p.add_run("Picture").add_picture(doc, "../img/btcqr.png", 100, 100);
 
 	//     if (p.has_next())
 	//     {
