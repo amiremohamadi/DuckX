@@ -12,6 +12,8 @@ int main() {
 		}
 	}
 
+	doc.clear();
+
 	duckx::Paragraph p =
 		doc.paragraphs().append("You can insert text in ");
 	p.add_run("italic, ", duckx::italic);
@@ -84,7 +86,6 @@ int main() {
 			t.set_text(i, j, szT);
 		}
 	}
-	//     doc.clean();
 	doc.save();
 
 	return 0;

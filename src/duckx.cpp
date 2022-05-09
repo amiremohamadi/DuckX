@@ -4,7 +4,7 @@
 #include "zip.h"
 #include <io.h>
 
-
+#define max(a,b) (a > b ? a:b)
 extern const unsigned char g_ucNewDocDat[4032];
 
 // Hack on pugixml
@@ -90,8 +90,8 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
     int cy = (int)(h * 12700);
     int i = 1;
     for (auto & doc_rel : doc.get_doc_rels().child("Relationships").children("Relationship")) {
-        //std::string rid = doc_rel.attribute("Id").value();
-        i++;
+        const char *rid = doc_rel.attribute("Id").value();
+        i = max(i, atoi(rid+3));
     }
     std::string sId = std::to_string(i);
     std::string embed = "rId" + sId;
@@ -980,6 +980,18 @@ void duckx::Document::clear()
     pugi::xml_node body = document.child("w:document").child("w:body");
     while (body.remove_child("w:p"));
     while (body.remove_child("w:tbl"));
+	_medias.clear();
+	pugi::xml_node rs = _doc_rels.child("Relationships");
+	pugi::xml_node r = rs.child("Relationship");
+	while (r != NULL)
+	{
+		pugi::xml_node r2 = r.next_sibling();
+		if (strstr(r.attribute("Target").value(), "media/"))
+		{
+			rs.remove_child(r);
+		}
+		r = r2;
+	}
 }
 
 duckx::Paragraph &duckx::Document::paragraphs() {
