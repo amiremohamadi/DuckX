@@ -18,6 +18,7 @@
 // TODO: Use container-iterator design pattern!
 
 namespace duckx {
+#define make_rgb(r, g, b) ((((unsigned char)r)<<16)|(((unsigned char)g)<<8)|((unsigned char)b))
 // Run contains runs in a paragraph
 class Run {
   private:
@@ -63,13 +64,13 @@ class Paragraph {
     bool has_next() const;
 
     Run &runs();
-    inline Run &add_run(const std::string &t, duckx::formatting_flag f = duckx::none, unsigned char nFontSize = 0, const std::string &strFontName = std::string()) { return add_run(t.c_str(),f, nFontSize, strFontName.data()); };
-    Run &add_run(const char *, duckx::formatting_flag = duckx::none, unsigned char nFontSize = 0, const char *pszFontName = NULL);
-    inline Paragraph &append(const std::string &t, duckx::formatting_flag f = duckx::none, unsigned char nFontSize = 0, const std::string &strFontName = std::string()) { return append(t.c_str(), f, nFontSize, strFontName.data()); };
-    Paragraph &append(const char *, duckx::formatting_flag = duckx::none, unsigned char nFontSize = 0, const char *pszFontName = NULL);
-    void set_alignment(paragraph_alignment a = duckx::align_left, unsigned char indent = 0, unsigned char font_size=10);
+    inline Run &add_run(const std::string &t, duckx::formatting_flag f = duckx::none, unsigned char nFontSize = 0, const std::string &strFontName = std::string(), int nColor = 0) { return add_run(t.c_str(),f, nFontSize, strFontName.data(), nColor); };
+    Run &add_run(const char *, duckx::formatting_flag = duckx::none, unsigned char nFontSize = 0, const char *pszFontName = NULL, int nColor = 0);
+    inline Paragraph &append(const std::string &t, duckx::formatting_flag f = duckx::none, unsigned char nFontSize = 0, const std::string &strFontName = std::string(), int nColor = 0) { return append(t.c_str(), f, nFontSize, strFontName.data(), nColor); };
+    Paragraph &append(const char *, duckx::formatting_flag = duckx::none, unsigned char nFontSize = 0, const char *pszFontName = NULL, int nColor = 0);
+    Paragraph &set_alignment(paragraph_alignment a = duckx::align_left, bool bNew = true, unsigned char indent = 0, unsigned char font_size = 10);
     inline bool set_text(const std::string &t, duckx::formatting_flag f = duckx::none) { return set_text(t.c_str(), f); };
-    bool set_text(const char *, duckx::formatting_flag = duckx::none);
+    bool set_text(const char *, duckx::formatting_flag = duckx::none, int nColor = 0);
     void add(pugi::xml_node);
 };
 
@@ -97,6 +98,10 @@ class TableCell {
     void mergeCol(int nSpanCol = 2);
     void mergeRow(bool bStart = false);
     void add();
+    void setBackGroundColor(int nColor);
+
+private:
+    int getWidth(pugi::xml_node cell);
 };
 
 // TableRow consists of one or more TableCells
@@ -136,12 +141,12 @@ class Table {
     void set_parent(pugi::xml_node);
     void set_current(pugi::xml_node);
 
-    Table &append();
+    Table &append(bool bNew = true);
     Table &next();
     bool has_next() const;
     void resize(int nRow = 1, int nCol = 1);
     void merge(int nStartRow = 1, int nStartCol = 1, int nSpanRow = 1, int nSpanCol = 2);
-    void set_text(int nRow, int nCol, const char *lpszText);
+    void set_text(int nRow, int nCol, const char *lpszText, paragraph_alignment a = duckx::align_left, int nBackGroundColor = 0, int nTextColor = 0, unsigned char nFontSize = 0, const char *pszFontName = NULL, duckx::formatting_flag = duckx::none);
 
     TableRow &rows();
 };
@@ -160,8 +165,8 @@ class Document {
     Document();
     Document(std::string);
     void file(std::string);
-    void open();
-    void save() const;
+    bool open();
+    bool save() const;
     void clear();
 
 	Paragraph &paragraphs();

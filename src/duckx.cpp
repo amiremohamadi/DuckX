@@ -90,6 +90,31 @@ void duckx::TableCell::resize(int nCol)
         meta.append_attribute("w:w").set_value(10240 / nCol);
         meta.append_attribute("w:type").set_value("dxa");
     }
+    else
+    {
+        pugi::xml_node meta = current.child("w:tcPr");
+        if (meta == NULL)
+        {
+            meta = current.append_child("w:tcPr");
+        }
+        meta = meta.child("w:tcW");
+        if (meta == NULL)
+        {
+            meta = meta.append_child("w:tcW");
+        }
+        pugi::xml_attribute attr = meta.attribute("w:w");
+        if (attr == NULL)
+        {
+            attr = meta.append_attribute("w:w");
+        }
+        attr.set_value(10240 / nCol);
+        attr = meta.attribute("w:type");
+        if (attr == NULL)
+        {
+            attr = meta.append_attribute("w:type");
+        }
+        attr.set_value("dxa");
+    }
 
     paragraph.add(current);
 
@@ -124,18 +149,21 @@ void duckx::TableCell::mergeCol(int nSpanCol)
     meta.append_child("w:gridSpan").append_attribute("w:val").set_value(nSpanCol);
     meta = meta.child("w:tcW");
     auto attr = meta.attribute("w:w");
-    attr.set_value(atoi(attr.value())*nSpanCol);
+
+    int nWidth = getWidth(current);
 
     current = current.next_sibling();
     for (int i = 1; i < nSpanCol; i++)
     {
         if (current != NULL)
         {
+            nWidth += getWidth(current);
             pugi::xml_node node = current.next_sibling();
             parent.remove_child(current);
             current = node;
         }
     }
+    attr.set_value(nWidth);
 }
 
 void duckx::TableCell::mergeRow(bool bStart)
@@ -152,6 +180,63 @@ void duckx::TableCell::add()
 {
     pugi::xml_node added = parent.append_copy(current);
     TableCell tc(parent, added);
+}
+
+void duckx::TableCell::setBackGroundColor(int nColor)
+{
+    pugi::xml_node meta = current.child("w:tcPr");
+    if (meta == NULL)
+    {
+        meta = current.insert_child_before("w:tcPr", current.first_child());
+    }
+    pugi::xml_node meta2 = meta.child("w:shd");
+    if (meta2 == NULL)
+    {
+        meta2 = meta.append_child("w:shd");
+    }
+    auto attr = meta2.attribute("w:val");
+    if (attr == NULL)
+    {
+        attr = meta2.append_attribute("w:val");
+    }
+    attr.set_value("clear");
+
+    attr = meta2.attribute("w:color");
+    if (attr == NULL)
+    {
+        attr = meta2.append_attribute("w:color");
+    }
+    attr.set_value("000000");
+
+    attr = meta2.attribute("w:fill");
+    if (attr == NULL)
+    {
+        attr = meta2.append_attribute("w:fill");
+    }
+    char szT[8];
+    sprintf(szT, "%06X", (unsigned int)nColor);
+    attr.set_value(szT);
+}
+
+int duckx::TableCell::getWidth(pugi::xml_node cell)
+{
+    if (cell != NULL)
+    {
+        pugi::xml_node meta = cell.child("w:tcPr");
+        if (meta != NULL)
+        {
+            meta = meta.child("w:tcW");
+            if (meta != NULL)
+            {
+                auto attr = meta.attribute("w:w");
+                if (attr != NULL)
+                {
+                    return atoi(attr.value());
+                }
+            }
+        }
+    }
+    return 0;
 }
 
 // Table rows
@@ -308,12 +393,9 @@ duckx::Table &duckx::Table::next() {
 
 void duckx::Table::resize(int nRow, int nCol)
 {
-    current = parent.child("w:tbl");
     if (current == NULL)
     {
         current = parent.append_child("w:tbl");
-//         pugi::xml_node meta = current.append_child("w:tblPr");
-//         meta.append_child("w:tblStyle").append_attribute("w:val").set_value(3);
     }
     row.set_parent(current);
 
@@ -338,21 +420,28 @@ void duckx::Table::set_current(pugi::xml_node node)
     this->row.set_parent(this->current);
 }
 
-duckx::Table &duckx::Table::append()
+duckx::Table &duckx::Table::append(bool bNew)
 {
-    if (current == NULL)
+    if (bNew)
     {
         current = parent.append_child("w:tbl");
     }
     else
     {
-        current = parent.append_copy(current);
+        if (current == NULL)
+        {
+            current = parent.append_child("w:tbl");
+        }
+        else
+        {
+            current = parent.append_copy(current);
+        }
     }
     row.set_parent(current);
     return *this;
 }
 
-void duckx::Table::set_text(int nRow, int nCol, const char *lpszText)
+void duckx::Table::set_text(int nRow, int nCol, const char *lpszText, paragraph_alignment a, int nBackGroundColor, int nTextColor, unsigned char nFontSize, const char *pszFontName, duckx::formatting_flag f)
 {
     TableRow &tr = rows();
     int i;
@@ -372,7 +461,26 @@ void duckx::Table::set_text(int nRow, int nCol, const char *lpszText)
             tc.next();
         }
     }
-    tc.paragraphs().set_text(lpszText);
+    
+    if (nBackGroundColor)
+    {
+        tc.setBackGroundColor(nBackGroundColor);
+    }
+
+    Paragraph p = tc.paragraphs();
+    if (a != align_left)
+    {
+        p.set_alignment(a, false);
+    }
+
+    if (nFontSize)
+    {
+        p.add_run(lpszText, f, nFontSize, pszFontName, nTextColor);
+    }
+    else
+    {
+        p.set_text(lpszText, f, nTextColor);
+    }
 }
 
 duckx::TableRow &duckx::Table::rows() {
@@ -412,7 +520,7 @@ duckx::Run &duckx::Paragraph::runs() {
     return this->run;
 }
 
-duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f, unsigned char nFontSize, const char *pszFontName)
+duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f, unsigned char nFontSize, const char *pszFontName, int nColor)
 {
     if (current == NULL)
     {
@@ -439,6 +547,12 @@ duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f
         meta.append_child("w:szCs").append_attribute("w:val").set_value(nFontSize);
     }
 
+    if (nColor)
+    {
+        char szT[8];
+        sprintf(szT, "%06X", (unsigned int)nColor);
+        meta.append_child("w:color").append_attribute("w:val").set_value(szT);
+    }
     if (f & duckx::bold)
         meta.append_child("w:b");
 
@@ -514,30 +628,26 @@ duckx::Run &duckx::Paragraph::add_run(const char *text, duckx::formatting_flag f
 }
 
 duckx::Paragraph &
-duckx::Paragraph::append(const char *text, duckx::formatting_flag f, unsigned char nFontSize, const char *pszFontName)
+duckx::Paragraph::append(const char *text, duckx::formatting_flag f, unsigned char nFontSize, const char *pszFontName, int nColor)
 {
     if (current == NULL)
     {
         current = parent.append_child("w:p");
-        add_run(text, f, nFontSize, pszFontName);
-        return *this;
     }
     else
     {
-//         pugi::xml_node new_para = parent.append_child("w:p");
-//         Paragraph p(parent, new_para);
-//         p.add_run(text, f);
-//         return p;
-        pugi::xml_node added = parent.append_copy(current);
-        Paragraph p(parent, added);
-        p.set_text(text, f);
-        return p;
+        current = parent.append_copy(current);
     }
+    add_run(text, f, nFontSize, pszFontName, nColor);
+    return *this;
 }
 
-void duckx::Paragraph::set_alignment(paragraph_alignment a, unsigned char indent, unsigned char font_size)
+duckx::Paragraph &duckx::Paragraph::set_alignment(paragraph_alignment a, bool bNew, unsigned char indent, unsigned char font_size)
 {
-    current = parent.append_child("w:p");
+    if (bNew == true || current == NULL)
+    {
+        current = parent.append_child("w:p");
+    }
     run.set_parent(current);
 
     pugi::xml_node meta = current.append_child("w:pPr");
@@ -560,9 +670,11 @@ void duckx::Paragraph::set_alignment(paragraph_alignment a, unsigned char indent
     case duckx::align_both: meta.append_child("w:jc").append_attribute("w:val").set_value("both"); break;
     default: break;
     }
+
+    return *this;
 }
 
-bool duckx::Paragraph::set_text(const char *lpszT, duckx::formatting_flag f)
+bool duckx::Paragraph::set_text(const char *lpszT, duckx::formatting_flag f, int nColor)
 {
     if (current == NULL)
     {
@@ -575,7 +687,7 @@ bool duckx::Paragraph::set_text(const char *lpszT, duckx::formatting_flag f)
     }
     else
     {
-        add_run(lpszT, f);
+        add_run(lpszT, f, 0, NULL, nColor);
     }
     return true;
 }
@@ -604,11 +716,11 @@ void duckx::Document::file(std::string directory) {
     this->directory = directory;
 }
 
-void duckx::Document::open() {
+bool duckx::Document::open() {
     void *buf = NULL;
     size_t bufsize;
 
-    if (access(directory.c_str(), 0) == -1)
+    if (access(directory.c_str(), 0) == -1)//文件是否存在
     {
         FILE *fp = fopen(directory.c_str(), "w+b");
         if (fp != NULL)
@@ -617,9 +729,14 @@ void duckx::Document::open() {
             fclose(fp);
         }
     }
+
     // Open file and load "xml" content to the document variable
     zip_t *zip =
         zip_open(this->directory.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
+    if (zip == NULL)
+    {
+        return false;
+    }
 
     zip_entry_open(zip, "word/document.xml");
     zip_entry_read(zip, &buf, &bufsize);
@@ -632,9 +749,11 @@ void duckx::Document::open() {
     free(buf);
 
     this->paragraph.set_parent(document.child("w:document").child("w:body"));
+
+    return true;
 }
 
-void duckx::Document::save() const {
+bool duckx::Document::save() const {
     // minizip only supports appending or writing to new files
     // so we must
     // - make a new file
@@ -642,6 +761,8 @@ void duckx::Document::save() const {
     // - copy the old files
     // - delete old docx
     // - rename new file to old file
+
+    bool isFailed = false; //是否操作失败
 
     // Read document buffer
     xml_string_writer writer;
@@ -657,12 +778,12 @@ void duckx::Document::save() const {
         zip_open(temp_file.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
 
     // Write out document.xml
-    zip_entry_open(new_zip, "word/document.xml");
+    isFailed = zip_entry_open(new_zip, "word/document.xml") < 0;
 
     const char *buf = writer.result.c_str();
 
-    zip_entry_write(new_zip, buf, strlen(buf));
-    zip_entry_close(new_zip);
+    isFailed = isFailed || (zip_entry_write(new_zip, buf, strlen(buf)) < 0);
+    isFailed = isFailed || (zip_entry_close(new_zip) < 0);
 
     // Open the original zip and copy all files which are not replaced by duckX
     zip_t *orig_zip =
@@ -671,7 +792,7 @@ void duckx::Document::save() const {
     // Loop & copy each relevant entry in the original zip
     int orig_zip_entry_ct = zip_total_entries(orig_zip);
     for (int i = 0; i < orig_zip_entry_ct; i++) {
-        zip_entry_openbyindex(orig_zip, i);
+        isFailed = isFailed || zip_entry_openbyindex(orig_zip, i) < 0;
         const char *name = zip_entry_name(orig_zip);
 
         // Skip copying the original file
@@ -679,14 +800,14 @@ void duckx::Document::save() const {
             // Read the old content
             void *entry_buf = NULL;
             size_t entry_buf_size;
-            zip_entry_read(orig_zip, &entry_buf, &entry_buf_size);
+            isFailed = isFailed || zip_entry_read(orig_zip, &entry_buf, &entry_buf_size) < 0;
 
             if (entry_buf != NULL)
             {
                 // Write into new zip
-                zip_entry_open(new_zip, name);
-                zip_entry_write(new_zip, entry_buf, entry_buf_size);
-                zip_entry_close(new_zip);
+                isFailed = isFailed || zip_entry_open(new_zip, name) < 0;
+                isFailed = isFailed || zip_entry_write(new_zip, entry_buf, entry_buf_size) < 0;
+                isFailed = isFailed || zip_entry_close(new_zip) < 0;
 
                 free(entry_buf);
             }
@@ -700,8 +821,10 @@ void duckx::Document::save() const {
     zip_close(new_zip);
 
     // Remove original zip, rename new to correct name
-    remove(original_file.c_str());
-    rename(temp_file.c_str(), original_file.c_str());
+    isFailed = isFailed || remove(original_file.c_str()) < 0;
+    isFailed = isFailed || rename(temp_file.c_str(), original_file.c_str()) < 0;
+
+    return !isFailed;
 }
 
 void duckx::Document::clear()
