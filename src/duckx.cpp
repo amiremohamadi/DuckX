@@ -72,12 +72,12 @@ bool duckx::Run::add_picture(Document &doc, const char *lpszPath, int w, int h)
 
     std::string descr = lpszPath;
     int nIndex = descr.find_last_of('/');
-    if (nIndex > 0)
+    if (nIndex >= 0)
     {
         descr = descr.substr(nIndex + 1);
     }
     nIndex = descr.find_last_of('\\');
-    if (nIndex > 0)
+    if (nIndex >= 0)
     {
         descr = descr.substr(nIndex + 1);
     }
