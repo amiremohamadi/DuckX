@@ -13,7 +13,9 @@ option(BUILD_SAMPLES "Build provided samples" OFF)
 # else we might encounter errors making the library 
 # not being able to be compiled
 
-find_library(icuuc icuuc "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/icu4c/lib")
+if(WIN32)
+    find_library(icuuc icuuc "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/icu4c/lib")
+endif()
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -28,10 +30,16 @@ set(THIRD_PARTY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml/pugixml.
 set(THIRD_PARTY_SRC "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml/pugixml.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip/zip.c")
 
+if(WIN32)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/icu4c/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
                     "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip")
+else()
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/zip")
+endif()
 
 if(BUILD_SHARED_LIBS)
     add_library(duckx SHARED ${SOURCES} ${THIRD_PARTY_SRC})
@@ -60,6 +68,7 @@ if (BUILD_SAMPLES)
         
         file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/samples/my_test.docx
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+     if(WIN32)
         file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/icu4c/bin/icudt71l.dat
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
         file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/icu4c/bin/icudt71.dll
@@ -68,6 +77,7 @@ if (BUILD_SAMPLES)
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
         file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/icu4c/bin/icuuc71d.dll
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
 endif()
 
 include(GNUInstallDirs)

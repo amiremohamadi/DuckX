@@ -2,7 +2,13 @@
 
 #include <cctype>
 #include "zip.h"
+#ifdef WIN32
 #include <io.h>
+#else
+#include <string.h>
+#include <unistd.h>
+#define stricmp strcasecmp
+#endif
 
 #define max(a,b) (a > b ? a:b)
 extern const unsigned char g_ucNewDocDat[4032];
