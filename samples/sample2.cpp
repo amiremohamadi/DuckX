@@ -6,15 +6,15 @@
 
 using namespace std;
 
-std::vector<char> gbk_utf8(const std::string &in)
+std::string gbk_utf8(const std::string &in)
 {
     UErrorCode status = U_ZERO_ERROR;
     int32_t     len;
-    std::vector<char> out;
+    std::string out;
     len = (in.size() << 2);
     out.resize(len);
 
-    len = ucnv_convert("utf-8", "gb18030", out.data(), out.size(), in.data(), -1, &status);
+    len = ucnv_convert("utf-8", "gb18030", (char*)out.data(), out.size(), in.data(), -1, &status);
     std::string s = u_errorName(status);
 
     out.resize(len);
@@ -37,7 +37,7 @@ int main() {
 
 	duckx::Paragraph p =
 		doc.paragraphs().append("You can insert text in ");
-    p.add_run(gbk_utf8("abc中文测试123").data());
+    p.add_run(gbk_utf8("abc中文测试123"));
 	p.add_run("italic, ", duckx::italic);
 	p.add_run("bold, ", duckx::bold);
 	p.add_run("underline, ", duckx::underline);
