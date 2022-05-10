@@ -16,6 +16,16 @@
 #include <pugixml.hpp>
 #include <vector>
 
+#ifdef _WIN32
+#ifdef duckx_EXPORTS
+#define DUCKX_EXPORT __declspec(dllexport)
+#else
+#define DUCKX_EXPORT __declspec(dllimport)
+#endif
+#else
+#define DUCKX_EXPORT
+#endif
+
 // TODO: Use container-iterator design pattern!
 
 namespace duckx {
@@ -29,7 +39,7 @@ struct MediaObject
 
 class Document;
 // Run contains runs in a paragraph
-class Run {
+class DUCKX_EXPORT Run {
   private:
     friend class IteratorHelper;
     // Store the parent node (a paragraph)
@@ -54,7 +64,7 @@ class Run {
 
 // Paragraph contains a paragraph
 // and stores runs
-class Paragraph {
+class DUCKX_EXPORT Paragraph {
   private:
     friend class IteratorHelper;
     // Store parent node (usually the body node)
@@ -85,7 +95,7 @@ class Paragraph {
 };
 
 // TableCell contains one or more paragraphs
-class TableCell {
+class DUCKX_EXPORT TableCell {
   private:
     friend class IteratorHelper;
     pugi::xml_node parent;
@@ -115,7 +125,7 @@ private:
 };
 
 // TableRow consists of one or more TableCells
-class TableRow {
+class DUCKX_EXPORT TableRow {
     friend class IteratorHelper;
     pugi::xml_node parent;
     pugi::xml_node current;
@@ -137,7 +147,7 @@ class TableRow {
 };
 
 // Table consists of one or more TableRow objects
-class Table {
+class DUCKX_EXPORT Table {
   private:
     friend class IteratorHelper;
     pugi::xml_node parent;
@@ -163,7 +173,7 @@ class Table {
 
 // Document contains whole the docx file
 // and stores paragraphs
-class Document {
+class DUCKX_EXPORT Document {
   private:
     friend class IteratorHelper;
     std::string directory;
