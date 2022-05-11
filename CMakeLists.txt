@@ -15,6 +15,8 @@ option(BUILD_SAMPLES "Build provided samples" OFF)
 
 if(WIN32)
     find_library(icuuc icuuc "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/icu4c/lib")
+else()
+    find_library(icuuc icuuc /usr)
 endif()
 
 set(CMAKE_CXX_STANDARD 11)
