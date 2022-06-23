@@ -347,7 +347,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_MAC
-#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
+#if defined(__i386__) || defined(__x86_64__)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : : )
+#elif defined(__aarch64__)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__(".inst 0xd4200000")
+#endif
 #elif DOCTEST_MSVC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __debugbreak()
 #elif defined(__MINGW32__)
