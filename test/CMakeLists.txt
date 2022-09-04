@@ -1,44 +1,23 @@
-set (CMAKE_CXX_STANDARD 11)
+cmake_minimum_required(VERSION 3.12)
 
-add_executable(
-    unit_tests
-    basic_tests.cpp
-)
+set(CMAKE_CXX_STANDARD 11)
 
-target_link_libraries(
-    unit_tests
-    duckx
-)
+# Install doctest
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/doctest.h)
+    file(DOWNLOAD
+        https://github.com/doctest/doctest/releases/download/v2.4.9/doctest.h
+        doctest.h)
+endif()
+include_directories(${CMAKE_BINARY_DIR})
 
-add_test(
-    NAME
-    unit
-    COMMAND
-    unit_tests
-)
+configure_file(sample.docx ${CMAKE_BINARY_DIR}/sample.docx COPYONLY)
 
-add_executable(
-    iterator_tests
-    iterator_tests.cpp
-)
+# Tests
+add_executable(basic_tests basic_tests.cpp)
+target_link_libraries(basic_tests duckx)
+add_test(NAME basic_tests COMMAND basic_tests)
 
-target_link_libraries(
-    iterator_tests
-    duckx
-)
+add_executable(iterator_tests iterator_tests.cpp)
+target_link_libraries(iterator_tests duckx)
+add_test(NAME iterator_tests COMMAND iterator_tests)
 
-add_test(
-    NAME
-    iterator
-    COMMAND
-    iterator_tests
-)
-
-# Need C++11 for iterator tests
-set_target_properties(iterator_tests PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
-
-configure_file(my_test.docx ${CMAKE_CURRENT_BINARY_DIR}/my_test.docx COPYONLY)

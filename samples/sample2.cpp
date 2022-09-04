@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-    duckx::Document doc("my_test.docx");
+    duckx::Document doc("sample.docx");
     doc.open();
 
     duckx::Paragraph p =

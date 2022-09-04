@@ -4,8 +4,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-TEST_CASE("checks contents of my_test.docx") {
-    duckx::Document doc("my_test.docx");
+TEST_CASE("checks contents of sample.docx") {
+    duckx::Document doc("sample.docx");
     doc.open();
 
     std::ostringstream ss;
