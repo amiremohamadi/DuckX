@@ -4046,7 +4046,6 @@ void *tdefl_write_image_to_png_file_in_memory(const void *pImage, int w, int h,
 #if defined(_MSC_VER)
 static FILE *mz_fopen(const char *pFilename, const char *pMode) {
   FILE *pFile;
-  setlocale(LC_CTYPE, "en_US.UTF-8");
   const char* tempLocale = setlocale(LC_CTYPE, NULL);
 
   if (tempLocale) {
