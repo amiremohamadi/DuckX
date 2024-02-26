@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.12)
 
 project(duckx VERSION 0.2)
 
@@ -13,7 +13,7 @@ option(BUILD_SAMPLES "Build provided samples" OFF)
 # else we might encounter errors making the library 
 # not being able to be compiled
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/duckx.hpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/include/constants.hpp"
@@ -39,6 +39,7 @@ add_library(duckx::duckx ALIAS duckx)
 
 target_include_directories(duckx PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
