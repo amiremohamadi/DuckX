@@ -46,6 +46,11 @@ duckx::Run &duckx::Run::next() {
 
 bool duckx::Run::has_next() const { return this->current != 0; }
 
+std::optional<std::reference_wrapper<duckx::Run>>
+duckx::Run::get_run_by_index(size_t index) {
+    return get_by_index(*this, index);
+}
+
 // Table cells
 duckx::TableCell::TableCell() {}
 
@@ -66,6 +71,10 @@ void duckx::TableCell::set_current(pugi::xml_node node) {
 }
 
 bool duckx::TableCell::has_next() const { return this->current != 0; }
+
+std::optional<std::reference_wrapper<duckx::TableCell>> duckx::TableCell::get_table_cell_by_index(size_t index) {
+    return get_by_index(*this, index);
+}
 
 duckx::TableCell &duckx::TableCell::next() {
     this->current = this->current.next_sibling();
@@ -97,6 +106,10 @@ void duckx::TableRow::set_current(pugi::xml_node node) { this->current = node; }
 duckx::TableRow &duckx::TableRow::next() {
     this->current = this->current.next_sibling();
     return *this;
+}
+
+std::optional<std::reference_wrapper<duckx::TableRow>> duckx::TableRow::get_table_row_by_index(size_t index) {
+    return get_by_index(*this, index);
 }
 
 duckx::TableCell &duckx::TableRow::cells() {
@@ -233,6 +246,11 @@ duckx::Paragraph::insert_paragraph_after(const std::string &text,
     p->add_run(text, f);
 
     return *p;
+}
+
+std::optional<std::reference_wrapper<duckx::Paragraph>>
+duckx::Paragraph::get_paragraph_by_index(size_t index){
+    return get_by_index(*this, index);
 }
 
 duckx::Document::Document() {

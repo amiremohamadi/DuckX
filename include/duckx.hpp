@@ -10,6 +10,8 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <string>
+#include <optional>
+#include <functional>
 
 #include <constants.hpp>
 #include <duckxiterator.hpp>
@@ -19,6 +21,19 @@
 // TODO: Use container-iterator design pattern!
 
 namespace duckx {
+
+template <class T>
+std::optional<std::reference_wrapper<T>>
+get_by_index(T& obj, size_t index){
+    if(index == 0) {
+        return obj;
+    }
+    if(obj.has_next()) {
+        return get_by_index(obj.next(), index - 1);
+    }
+    return std::nullopt;
+}
+
 // Run contains runs in a paragraph
 class Run {
   private:
@@ -40,6 +55,7 @@ class Run {
 
     Run &next();
     bool has_next() const;
+    std::optional<std::reference_wrapper<Run>> get_run_by_index(size_t index);
 };
 
 // Paragraph contains a paragraph
@@ -68,6 +84,7 @@ class Paragraph {
     Run &add_run(const char *, duckx::formatting_flag = duckx::none);
     Paragraph &insert_paragraph_after(const std::string &,
                                       duckx::formatting_flag = duckx::none);
+    std::optional<std::reference_wrapper<Paragraph>> get_paragraph_by_index(size_t index);
 };
 
 // TableCell contains one or more paragraphs
@@ -90,6 +107,7 @@ class TableCell {
 
     TableCell &next();
     bool has_next() const;
+    std::optional<std::reference_wrapper<TableCell>> get_table_cell_by_index(size_t index);
 };
 
 // TableRow consists of one or more TableCells
@@ -110,6 +128,7 @@ class TableRow {
 
     bool has_next() const;
     TableRow &next();
+    std::optional<std::reference_wrapper<TableRow>> get_table_row_by_index(size_t index);
 };
 
 // Table consists of one or more TableRow objects
