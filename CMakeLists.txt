@@ -13,7 +13,7 @@ option(BUILD_SAMPLES "Build provided samples" OFF)
 # else we might encounter errors making the library 
 # not being able to be compiled
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/duckx.hpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/include/constants.hpp"
