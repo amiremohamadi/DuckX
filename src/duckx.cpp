@@ -256,6 +256,12 @@ void duckx::Document::open() {
     zip_t *zip =
         zip_open(this->directory.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
 
+    if (!zip) {
+        this->flag_is_open = false;
+        return;
+    }
+    this->flag_is_open = true;
+
     zip_entry_open(zip, "word/document.xml");
     zip_entry_read(zip, &buf, &bufsize);
 
@@ -277,6 +283,11 @@ void duckx::Document::save() const {
     // - copy the old files
     // - delete old docx
     // - rename new file to old file
+    
+    if(!this->is_open()) {
+        // if file is not existing, save() will make no sense
+        return;
+    }
 
     // Read document buffer
     xml_string_writer writer;
@@ -334,6 +345,10 @@ void duckx::Document::save() const {
     // Remove original zip, rename new to correct name
     remove(original_file.c_str());
     rename(temp_file.c_str(), original_file.c_str());
+}
+
+bool duckx::Document::is_open() const {
+    return this->flag_is_open;
 }
 
 duckx::Paragraph &duckx::Document::paragraphs() {
