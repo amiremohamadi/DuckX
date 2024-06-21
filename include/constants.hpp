@@ -14,6 +14,7 @@ formatting_flag superscript = 1 << 4;
 formatting_flag subscript = 1 << 5;
 formatting_flag smallcaps = 1 << 6;
 formatting_flag shadow = 1 << 7;
+formatting_flag hidden = 1 << 8;
 } // namespace duckx
 
 #endif
