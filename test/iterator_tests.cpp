@@ -5,9 +5,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-TEST_CASE("checks contents of my_test.docx with iterator")
+TEST_CASE("checks contents of sample.docx with iterator")
 {
-    duckx::Document doc("my_test.docx");
+    duckx::Document doc("sample.docx");
     doc.open();
 
     std::ostringstream ss;
@@ -51,7 +51,7 @@ TEST_CASE("Check equality in")
 	auto p1 = begin(testObject);
     auto p2 = begin(testObject);
     CHECK_EQ(p1, p2);
-    duckx::Document doc("my_test.docx");
+    duckx::Document doc("sample.docx");
     doc.open();
 
     CHECK_EQ(begin(doc.paragraphs()), begin(doc.paragraphs()));
